@@ -19,6 +19,40 @@
 				"command": "code-with-todoist.updateToken",
 				"title": "Update Todoist Integration API Token"
 			}
+		],
+		"menus": {
+
+		},
+		"views": {
+			"code-with-todoist": [
+				{
+					"id": "projects",
+					"name": "Projects"
+				},
+				{
+					"id": "task",
+					"name": "Task"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "code-with-todoist",
+					"title": "Code with Todoist",
+					"icon": "media/icon.svg"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "projects",
+				"contents": "No projects were loaded \n//TODO: Edit this text \n[Update API Token](command:code-with-todoist.updateToken)"
+			},
+			{
+				"view": "task",
+				"contents": "No task was selected \n//TODO: Edit this text"
+			}
 		]
 	},
 	"scripts": {
