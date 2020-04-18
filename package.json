@@ -16,12 +16,39 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "code-with-todoist.updateToken",
+				"command": "todoist.updateToken",
 				"title": "Update Todoist Integration API Token"
+			},
+			{
+				"command": "todoist.createProject",
+				"title": "Create Project",
+				"icon": {
+					"light": "media/icon.svg",
+					"dark": "media/icon.svg"
+				}
+			},
+			{
+				"command": "todoist.createTask",
+				"title": "Create Task",
+				"icon": {
+					"light": "media/icon.svg",
+					"dark": "media/icon.svg"
+				}
 			}
 		],
 		"menus": {
-
+			"view/title": [
+				{
+					"command": "todoist.createProject",
+					"when": "view == projects",
+					"group": "navigation"
+				},
+				{
+					"command": "todoist.createTask",
+					"when": "view == task",
+					"group": "navigation"
+				}
+			]
 		},
 		"views": {
 			"code-with-todoist": [
@@ -47,7 +74,7 @@
 		"viewsWelcome": [
 			{
 				"view": "projects",
-				"contents": "No projects were loaded \n//TODO: Edit this text \n[Update API Token](command:code-with-todoist.updateToken)"
+				"contents": "No projects were loaded \n//TODO: Edit this text \n[Update API Token](command:todoist.updateToken)"
 			},
 			{
 				"view": "task",

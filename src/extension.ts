@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	// Commands -------------------------------------------------------------------------
 
-	context.subscriptions.push(vscode.commands.registerCommand('code-with-todoist.updateToken', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.updateToken', () => {
 		inputTodoistApiToken();
 	}));
 
@@ -31,6 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 			ignoreFocusOut: true,
 			placeHolder: '',
 			prompt: 'Enter your Todoist Integrations API Key. \n Found in Settings > Integrations >	API token',
+			value: apiToken
 		};
 		vscode.window.showInputBox(options).then(input => {
 			if (input) {
