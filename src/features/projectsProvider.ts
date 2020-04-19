@@ -27,11 +27,11 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
         if (element) {
             return Promise.resolve(new Promise(function (resolve, reject) {
                 let treeView: todoistTreeView[] = [];
-                if (data.projects) {
+                if (data.projects && data.projects.length > 0) {
                     let projects = formatProjects(data.projects.filter(p => p.parent && p.parent == parseInt(element.id!)));
                     treeView.push(...projects);
                 }
-                if (data.tasks) {
+                if (data.tasks && data.tasks.length > 0) {
                     let tasks = formatTasks(data.tasks.filter(t => t.project_id.toString() === element.id));
                     treeView.push(...tasks);
                     resolve(treeView);
@@ -46,7 +46,7 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
         }
         else {
             return Promise.resolve(new Promise(function (resolve, reject) {
-                if (data.projects) {
+                if (data.projects && data.projects.length > 0) {
                     resolve(formatProjects(data.projects.filter(p => !p.parent)));
                 }
                 else {
@@ -63,14 +63,30 @@ function formatTasks(tasks: task[]) {
     let activeTasks: todoistTreeView[] = [];
     tasks = tasks.sort((a, b) => a.order > b.order ? 1 : 0);
     tasks.forEach(t => {
-        let treeview = new todoistTreeView(t.content);
+        let treeview = new todoistTreeView(getIndent(t, tasks) + t.content);
         treeview.id = t.id.toString();
         treeview.tooltip = t.content;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
         treeview.task = t;
+        treeview.command = {
+            command: 'todoist.openTask',
+            title: 'Open task',
+            arguments: [t.id],
+            tooltip: 'Open task'
+        };
+
         activeTasks.push(treeview);
     });
     return activeTasks;
+}
+
+function getIndent(task: task, tasks: task[]): string {
+    if (task.parent) {
+        let parentTask = tasks.filter(t => t.id === task.parent);
+        if (parentTask.length > 0)
+            return '    ' + getIndent(parentTask[0], tasks);
+    }
+    return '';
 }
 
 function formatProjects(projects: project[]) {
