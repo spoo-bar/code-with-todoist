@@ -6,3 +6,4 @@ export class todoistTreeView extends vscode.TreeItem {
     project!: project;
     task!: task;
 }
+

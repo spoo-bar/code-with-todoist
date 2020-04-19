@@ -3,11 +3,12 @@ import project from '../models/project';
 import todoistAPIHelper from '../helpers/todoistAPIHelper';
 import task from '../models/task';
 import { todoistTreeView } from '../models/todoistTreeView';
+import settingsHelper from '../helpers/settingsHelper';
 
 export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView> {
 
-    private apiHelper : todoistAPIHelper;
-    private state : vscode.Memento;
+    private apiHelper: todoistAPIHelper;
+    private state: vscode.Memento;
     onDidChangeTreeData?: vscode.Event<todoistTreeView | null | undefined> | undefined;
 
     constructor(context: vscode.Memento) {
@@ -20,47 +21,68 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
     }
 
     getChildren(element?: todoistTreeView | undefined): vscode.ProviderResult<todoistTreeView[]> {
-        if(element) {
-            const api = this.apiHelper;
-            let cc : Promise<todoistTreeView[]>= new Promise(function(resolve, reject) {
-                api.getActiveTasks(element.id!).then((tasks: task[]) => {
-                    tasks = tasks.sort((a, b) => a.order > b.order ? 1 : 0);
-                    let activeTasks : todoistTreeView[] = [];
-                    tasks.forEach(t => {
-                        let temp = new todoistTreeView(t.content);
-                        temp.id = t.id.toString();
-                        temp.tooltip = t.content;
-                        temp.collapsibleState = vscode.TreeItemCollapsibleState.None,
-                        temp.task = t;
-                        activeTasks.push(temp);
+        const api = this.apiHelper;
+        const data = settingsHelper.getTodoistData(this.state);
+
+        if (element) {
+            return Promise.resolve(new Promise(function (resolve, reject) {
+                let treeView: todoistTreeView[] = [];
+                if (data.projects) {
+                    let projects = formatProjects(data.projects.filter(p => p.parent && p.parent == parseInt(element.id!)));
+                    treeView.push(...projects);
+                }
+                if (data.tasks) {
+                    let tasks = formatTasks(data.tasks.filter(t => t.project_id.toString() === element.id));
+                    treeView.push(...tasks);
+                    resolve(treeView);
+                }
+                else {
+                    api.getActiveTasks().then((tasks: task[]) => {
+                        treeView.push(...formatTasks(tasks.filter(t => t.project_id.toString() === element.id)));
+                        resolve(treeView);
                     });
-                    resolve(activeTasks);                
-                });
-            });            
-            return Promise.resolve(cc);
+                }
+            }));
         }
         else {
-
-            const api = this.apiHelper;
-            let cc : Promise<todoistTreeView[]>= new Promise(function(resolve, reject) {
-                api.getProjects().then((projects: project[]) => {
-                    let displayProjects : todoistTreeView[] = [];
-                    projects = projects.sort((a, b) => a.order > b.order ? 1 : 0);
-                    projects.filter(p => !p.parent).forEach(p => {
-                        let temp = new todoistTreeView(p.name);
-                        temp.id = p.id.toString();
-                        temp.tooltip = p.name;
-                        temp.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed,
-                        temp.project = p;
-                        displayProjects.push(temp);
+            return Promise.resolve(new Promise(function (resolve, reject) {
+                if (data.projects) {
+                    resolve(formatProjects(data.projects.filter(p => !p.parent)));
+                }
+                else {
+                    api.getProjects().then((projects: project[]) => {
+                        resolve(formatProjects(projects.filter(p => !p.parent)));
                     });
-                    resolve(displayProjects);                
-                });
-            });            
-            return Promise.resolve(cc);
+                }
+            }));
         }
     }
+}
 
+function formatTasks(tasks: task[]) {
+    let activeTasks: todoistTreeView[] = [];
+    tasks = tasks.sort((a, b) => a.order > b.order ? 1 : 0);
+    tasks.forEach(t => {
+        let treeview = new todoistTreeView(t.content);
+        treeview.id = t.id.toString();
+        treeview.tooltip = t.content;
+        treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
+        treeview.task = t;
+        activeTasks.push(treeview);
+    });
+    return activeTasks;
+}
 
-
+function formatProjects(projects: project[]) {
+    let displayProjects: todoistTreeView[] = [];
+    projects = projects.sort((a, b) => a.order > b.order ? 1 : 0);
+    projects.forEach(p => {
+        let treeview = new todoistTreeView(p.name);
+        treeview.id = p.id.toString();
+        treeview.tooltip = p.name;
+        treeview.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+        treeview.project = p;
+        displayProjects.push(treeview);
+    });
+    return displayProjects;
 }

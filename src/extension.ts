@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import settingsHelper from './helpers/settingsHelper';
-import todoistAPIHelper from './helpers/todoistAPIHelper';
 import { projectsProvider } from './features/projectsProvider';
 
 // this method is called when your extension is activated
@@ -14,12 +13,6 @@ export function activate(context: vscode.ExtensionContext) {
 	if(!apiToken) {
 		inputTodoistApiToken();
 	}
-
-	vscode.window.showInformationMessage("Token found");	
-	// let api = new todoistAPIHelper(context.globalState);
-	// api.getProjects().then(p => {
-	// 	p.forEach(p1 => vscode.window.showInformationMessage(p1.name))
-	// });
 
 	vscode.window.registerTreeDataProvider('projects', new projectsProvider(context.globalState))
 	
