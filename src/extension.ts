@@ -39,6 +39,10 @@ export function activate(context: vscode.ExtensionContext) {
 		syncTodoist();
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.openTaskInBrowser', (taskUrl) => {
+		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(taskUrl))
+	}));
+
 
 	function syncTodoist() {
 		const apiHelper = new todoistAPIHelper(context.globalState);

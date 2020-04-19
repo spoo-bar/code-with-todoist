@@ -36,7 +36,7 @@ export class taskProvider implements vscode.TreeDataProvider<todoistTreeView> {
 
                     let taskTitle = new todoistTreeView(task.content);
                     taskTitle.collapsibleState = vscode.TreeItemCollapsibleState.None;
-                    taskTitle.id = task.id.toString();
+                    taskTitle.id = task.id.toString() + '_task';
                     //taskTitle.description = task.content;
                     taskTitle.tooltip = task.content;
                     treeView.push(taskTitle);
@@ -61,15 +61,15 @@ export class taskProvider implements vscode.TreeDataProvider<todoistTreeView> {
                         treeView.push(taskParent);
                     }
 
-                    // const section = data.sections.filter(s => s.id === task.section_id);
-                    // if (section.length > 0) {
-                    //     let taskSection = new todoistTreeView("Section");
-                    //     taskSection.collapsibleState = vscode.TreeItemCollapsibleState.None;
-                    //     taskSection.id = section[0].id.toString();
-                    //     taskSection.description = section[0].name;
-                    //     taskSection.tooltip = section[0].name;
-                    //     treeView.push(taskSection);
-                    // }
+                    const section = data.sections.filter(s => s.id === task.section_id);
+                    if (section.length > 0) {
+                        let taskSection = new todoistTreeView("Section");
+                        taskSection.collapsibleState = vscode.TreeItemCollapsibleState.None;
+                        taskSection.id = section[0].id.toString();
+                        taskSection.description = section[0].name;
+                        taskSection.tooltip = section[0].name;
+                        treeView.push(taskSection);
+                    }
 
                     if (task.due) {
                         let taskParent = new todoistTreeView("Due");
@@ -89,8 +89,23 @@ export class taskProvider implements vscode.TreeDataProvider<todoistTreeView> {
                     // Add labels
 
                     // Add comments
+                    
 
-                    // Redirect url
+                    let emptyTask = new todoistTreeView("");
+                    emptyTask.collapsibleState = vscode.TreeItemCollapsibleState.None;
+                    emptyTask.id = 'emptyBeforeClose';
+                    treeView.push(emptyTask);
+
+                    let openInBrowser = new todoistTreeView("Open in Browser");
+                    openInBrowser.collapsibleState = vscode.TreeItemCollapsibleState.None;
+                    openInBrowser.id = task.id.toString() + "_browser";
+                    openInBrowser.command = {
+                        command: 'todoist.openTaskInBrowser',
+                        title: 'Open task in Browser',
+                        arguments: [task.url],
+                        tooltip: 'Open task in Browser'
+                    };            
+                    treeView.push(openInBrowser);
 
 
                     resolve(treeView);

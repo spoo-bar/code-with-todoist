@@ -63,6 +63,7 @@ export default class todoistAPIHelper {
                         data.tasks.push(task.deserialize(element));
                     });
                     settingsHelper.setTodoistData(state, data);
+                    resolve();
                 }
                 else {
                     reject(Error(response.statusText))
@@ -91,6 +92,7 @@ export default class todoistAPIHelper {
                         data.sections.push(section.deserialize(element));
                     });
                     settingsHelper.setTodoistData(state, data);
+                    resolve();
                 }
                 else {
                     reject(Error(response.statusText))
