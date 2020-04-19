@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import settingsHelper from './helpers/settingsHelper';
 import { projectsProvider } from './features/projectsProvider';
 import todoistAPIHelper from './helpers/todoistAPIHelper';
+import { taskProvider } from './features/taskProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -15,9 +16,13 @@ export function activate(context: vscode.ExtensionContext) {
 		inputTodoistApiToken();
 	}
 
+	settingsHelper.setSelectedTask(context.workspaceState, 0);
 	syncTodoist();
 
-	vscode.window.registerTreeDataProvider('projects', new projectsProvider(context.globalState))
+	const projectsTreeViewProvider = new projectsProvider(context.globalState);
+	const taskTreeViewProvider = new taskProvider(context);
+	vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider)
+	vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
 	
 	// Commands -------------------------------------------------------------------------
 
@@ -26,7 +31,8 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.openTask', (taskId) => {
-		vscode.window.showInformationMessage(`Selected taask ${taskId}`);
+		settingsHelper.setSelectedTask(context.workspaceState, parseInt(taskId));
+		taskTreeViewProvider.refresh();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.sync', () => {
@@ -38,12 +44,16 @@ export function activate(context: vscode.ExtensionContext) {
 		const apiHelper = new todoistAPIHelper(context.globalState);
 		apiHelper.syncProjects().then(() => {
 			apiHelper.syncActiveTasks().then(() => {
-				vscode.window.showInformationMessage("Synced Todoist");
+				apiHelper.syncSections().then(() => {
+					vscode.window.showInformationMessage("Synced Todoist");
+				}).catch(error => {
+					vscode.window.showErrorMessage("Could not sync Todoist sections. " + error);
+				});				
 			}).catch(error => {
 				vscode.window.showErrorMessage("Could not sync Todoist tasks. " + error);
 			});
 		}).catch(error => {
-			vscode.window.showErrorMessage("Could not sync Todoist tasks. " + error);
+			vscode.window.showErrorMessage("Could not sync Todoist projects. " + error);
 		});
 	}
 

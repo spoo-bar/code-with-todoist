@@ -3,6 +3,7 @@ import axios from 'axios';
 import settingsHelper from './settingsHelper';
 import project from '../models/project';
 import task from '../models/task';
+import section from '../models/section';
 
 export default class todoistAPIHelper {
 
@@ -60,6 +61,34 @@ export default class todoistAPIHelper {
                     data.tasks = [];
                     response.data.forEach((element: any) => {
                         data.tasks.push(task.deserialize(element));
+                    });
+                    settingsHelper.setTodoistData(state, data);
+                }
+                else {
+                    reject(Error(response.statusText))
+                }
+            }).catch(error => {
+                reject(Error(error));
+            });
+        });
+    }
+
+    public syncSections(): Promise<void> {
+        const url = this.todoistAPIUrl;
+        const jwt = this.apiToken;
+        let state = this.state;
+
+        return new Promise(function (resolve, reject) {
+            axios.get(encodeURI(url + 'sections'), {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            }).then(response => {
+                if (response.status === 200) {
+                    let data = settingsHelper.getTodoistData(state);
+                    data.sections = [];
+                    response.data.forEach((element: any) => {
+                        data.sections.push(section.deserialize(element));
                     });
                     settingsHelper.setTodoistData(state, data);
                 }

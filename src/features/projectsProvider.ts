@@ -9,7 +9,13 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
 
     private apiHelper: todoistAPIHelper;
     private state: vscode.Memento;
-    onDidChangeTreeData?: vscode.Event<todoistTreeView | null | undefined> | undefined;
+    
+    private _onDidChangeTreeData: vscode.EventEmitter<todoistTreeView | undefined> = new vscode.EventEmitter<todoistTreeView | undefined>();
+    onDidChangeTreeData?: vscode.Event<todoistTreeView | null | undefined> | undefined = this._onDidChangeTreeData.event;
+
+    refresh(): void {
+		this._onDidChangeTreeData.fire();
+	}
 
     constructor(context: vscode.Memento) {
         this.state = context;

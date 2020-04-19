@@ -26,5 +26,6 @@ export class DueDate {
     recurring!: Boolean;
     datetime!: string;
     timezone!: string;
+    string!: string;
 }
 

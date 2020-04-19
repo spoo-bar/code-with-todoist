@@ -3,6 +3,8 @@ import { todoist } from '../models/todoist';
 
 const todoistAPIToken = "todoistAPIToken";
 const todoistData = "todoist";
+const selectedTask = "todoistSelectedTask"
+
 export default class settingsHelper {
 
 
@@ -26,6 +28,19 @@ export default class settingsHelper {
 
     public static setTodoistData(context: vscode.Memento, data: todoist): void {
         context.update(todoistData, JSON.stringify(data));
+        return;
+    }
+
+    public static getSelectedTask(context: vscode.Memento): Number {
+        let taskId = context.get<string>(selectedTask);
+        if(taskId) {
+            return parseInt(taskId);
+        }
+        return 0;
+    }
+
+    public static setSelectedTask(context: vscode.Memento, taskId: Number): void {
+        context.update(selectedTask, taskId);
         return;
     }
 
