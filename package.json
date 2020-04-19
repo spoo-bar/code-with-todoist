@@ -25,9 +25,35 @@
 			},
 			{
 				"command": "todoist.sync",
-				"title": "Sync Todoist"
+				"title": "Sync Todoist",
+				"icon":{
+					"light": "media/light_refresh.svg",
+					"dark": "media/dark_refresh.svg"
+				}
+			},
+			{
+				"command": "todoist.closeTask",
+				"title": "Mark task as done",
+				"icon": {
+					"light": "media/light_check.svg",
+					"dark": "media/dark_check.svg"
+				}
 			}
 		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "todoist.closeTask",
+					"when": "view == task",
+					"group": "navigation"
+				},
+				{
+					"command": "todoist.sync",
+					"when": "view == projects",
+					"group": "navigation"
+				}
+			]
+		},
 		"views": {
 			"code-with-todoist": [
 				{

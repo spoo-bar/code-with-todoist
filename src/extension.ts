@@ -53,8 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 	function syncTodoist() {
-		const apiHelper = new todoistAPIHelper(context.globalState);
 		const state = context.globalState;
+		const apiHelper = new todoistAPIHelper(state);
+		const projectsTreeViewProvider = new projectsProvider(state);
+
 		apiHelper.syncProjects().then(() => {
 			apiHelper.syncActiveTasks().then(() => {
 				apiHelper.syncSections().then(() => {
@@ -62,6 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
 					let data = settingsHelper.getTodoistData(state);
 					data.lastSyncTime = new Date();
 					settingsHelper.setTodoistData(state, data);
+					projectsTreeViewProvider.refresh();
 				}).catch(error => {
 					vscode.window.showErrorMessage("Could not sync Todoist sections. " + error);
 				});				
