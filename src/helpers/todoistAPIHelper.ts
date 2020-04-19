@@ -15,6 +15,64 @@ export default class todoistAPIHelper {
         this.state = context;
     }
 
+    public syncProjects(): Promise<void> {
+        const url = this.todoistAPIUrl;
+        const jwt = this.apiToken;
+        let state = this.state;
+
+        return new Promise(function (resolve, reject) {
+            axios.get(encodeURI(url + 'projects'), {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            }).then(response => {
+                if (response.status === 200) {
+                    let data = settingsHelper.getTodoistData(state);
+                    data.projects = [];
+                    response.data.forEach((element: any) => {
+                        data.projects.push(project.deserialize(element));
+                    });
+                    settingsHelper.setTodoistData(state, data);
+                    resolve();
+                }
+                else {
+                    reject(Error(response.statusText))
+                }
+            }).catch(error => {
+                reject(Error(error));
+            });
+        });
+    }
+
+    public syncActiveTasks(): Promise<void> {
+        const url = this.todoistAPIUrl;
+        const jwt = this.apiToken;
+        let state = this.state;
+
+        return new Promise(function (resolve, reject) {
+            axios.get(encodeURI(url + 'tasks'), {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            }).then(response => {
+                if (response.status === 200) {
+                    let data = settingsHelper.getTodoistData(state);
+                    data.tasks = [];
+                    response.data.forEach((element: any) => {
+                        data.tasks.push(task.deserialize(element));
+                    });
+                    settingsHelper.setTodoistData(state, data);
+                }
+                else {
+                    reject(Error(response.statusText))
+                }
+            }).catch(error => {
+                reject(Error(error));
+            });
+        });
+    }
+
+    // TODO : Remove
     public getProjects(): Promise<project[]> {
         const url = this.todoistAPIUrl;
         const jwt = this.apiToken;

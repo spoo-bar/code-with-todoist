@@ -3,12 +3,16 @@
 	"displayName": "code with Todoist",
 	"description": "Todoist plugin for vs code",
 	"version": "0.0.1",
+	"publisher": "Spoorthi Satheesha",
+	"license": "",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
 	"categories": [
 		"Other"
 	],
+	"keywords": ["todoist", "productivity"],
+	"preview": true,
 	"activationEvents": [
 		"onView:projects"
 	],
@@ -20,36 +24,10 @@
 				"title": "Update Todoist Integration API Token"
 			},
 			{
-				"command": "todoist.createProject",
-				"title": "Create Project",
-				"icon": {
-					"light": "media/icon.svg",
-					"dark": "media/icon.svg"
-				}
-			},
-			{
-				"command": "todoist.createTask",
-				"title": "Create Task",
-				"icon": {
-					"light": "media/icon.svg",
-					"dark": "media/icon.svg"
-				}
+				"command": "todoist.sync",
+				"title": "Sync Todoist"
 			}
 		],
-		"menus": {
-			"view/title": [
-				{
-					"command": "todoist.createProject",
-					"when": "view == projects",
-					"group": "navigation"
-				},
-				{
-					"command": "todoist.createTask",
-					"when": "view == task",
-					"group": "navigation"
-				}
-			]
-		},
 		"views": {
 			"code-with-todoist": [
 				{
