@@ -17,7 +17,11 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	settingsHelper.setSelectedTask(context.workspaceState, 0);
-	syncTodoist();
+	const lastSyncTime = new Date(settingsHelper.getTodoistData(context.globalState).lastSyncTime).getTime();
+	const currentTime = new Date().getTime();
+	if(currentTime - lastSyncTime > 600000) { // 10 minutes
+		syncTodoist();
+	}
 
 	const projectsTreeViewProvider = new projectsProvider(context.globalState);
 	const taskTreeViewProvider = new taskProvider(context);
@@ -43,13 +47,21 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(taskUrl))
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', () => {
+		vscode.window.showInformationMessage("closed task" + settingsHelper.getSelectedTask(context.workspaceState));
+	}));
+
 
 	function syncTodoist() {
 		const apiHelper = new todoistAPIHelper(context.globalState);
+		const state = context.globalState;
 		apiHelper.syncProjects().then(() => {
 			apiHelper.syncActiveTasks().then(() => {
 				apiHelper.syncSections().then(() => {
 					vscode.window.showInformationMessage("Synced Todoist");
+					let data = settingsHelper.getTodoistData(state);
+					data.lastSyncTime = new Date();
+					settingsHelper.setTodoistData(state, data);
 				}).catch(error => {
 					vscode.window.showErrorMessage("Could not sync Todoist sections. " + error);
 				});				
