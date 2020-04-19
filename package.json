@@ -10,7 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*"
+		"onView:projects"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
