@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import settingsHelper from './helpers/settingsHelper';
 import todoistAPIHelper from './helpers/todoistAPIHelper';
+import { projectsProvider } from './features/projectsProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -14,9 +15,13 @@ export function activate(context: vscode.ExtensionContext) {
 		inputTodoistApiToken();
 	}
 
-	vscode.window.showInformationMessage("Token found");
-	todoistAPIHelper.getProjects(context.globalState);
+	vscode.window.showInformationMessage("Token found");	
+	// let api = new todoistAPIHelper(context.globalState);
+	// api.getProjects().then(p => {
+	// 	p.forEach(p1 => vscode.window.showInformationMessage(p1.name))
+	// });
 
+	vscode.window.registerTreeDataProvider('projects', new projectsProvider(context.globalState))
 	
 	// Commands -------------------------------------------------------------------------
 
