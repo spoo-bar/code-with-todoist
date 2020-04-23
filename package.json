@@ -52,6 +52,13 @@
 					"when": "view == projects",
 					"group": "navigation"
 				}
+			],
+			"view/item/context": [
+				{
+					"command": "todoist.closeTask",
+					"when": "view == projects && viewItem == todoistTask",
+					"group": "inline"
+				}
 			]
 		},
 		"views": {

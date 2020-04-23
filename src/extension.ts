@@ -5,6 +5,7 @@ import settingsHelper from './helpers/settingsHelper';
 import { projectsProvider } from './features/projectsProvider';
 import todoistAPIHelper from './helpers/todoistAPIHelper';
 import { taskProvider } from './features/taskProvider';
+import task from './models/task';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -48,8 +49,15 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(taskUrl))
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', () => {
-		let taskId = settingsHelper.getSelectedTask(context.workspaceState);
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', (task : task) => {
+		let taskId : Number;
+		if(task) {
+			taskId = task.id;
+		}
+		else {
+			taskId = settingsHelper.getSelectedTask(context.workspaceState);
+		}
+
 		vscode.window.showInformationMessage("Are you sure you want to mark the task as done?", {
 			modal: false
 		}, 'Yes', 'No').then(response => {
@@ -73,23 +81,40 @@ export function activate(context: vscode.ExtensionContext) {
 		const apiHelper = new todoistAPIHelper(state);
 		const projectsTreeViewProvider = new projectsProvider(state);
 
-		apiHelper.syncProjects().then(() => {
-			apiHelper.syncActiveTasks().then(() => {
-				apiHelper.syncSections().then(() => {
-					vscode.window.showInformationMessage("Synced Todoist");
-					let data = settingsHelper.getTodoistData(state);
-					data.lastSyncTime = new Date();
-					settingsHelper.setTodoistData(state, data);
-					projectsTreeViewProvider.refresh();
+		const progressOptions :vscode.ProgressOptions = {
+			location: vscode.ProgressLocation.Notification,
+			title: "Syncing with Todoist",
+			cancellable: false
+		};
+		vscode.window.withProgress(progressOptions, (progress, token) => {
+			token.onCancellationRequested(() => {});
+			progress.report({ increment: 0 });
+			
+			return  new Promise(resolve => {
+				apiHelper.syncProjects().then(() => {
+					progress.report({ increment: 33 });
+					apiHelper.syncActiveTasks().then(() => {
+						progress.report({ increment: 66 });
+						apiHelper.syncSections().then(() => {
+							progress.report({ increment: 100, message: "Completed sync!" });
+							let data = settingsHelper.getTodoistData(state);
+							data.lastSyncTime = new Date();
+							settingsHelper.setTodoistData(state, data);
+							vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
+							projectsTreeViewProvider.refresh();
+							resolve();
+						}).catch(error => {
+							vscode.window.showErrorMessage("Could not sync Todoist sections. " + error);
+						});
+					}).catch(error => {
+						vscode.window.showErrorMessage("Could not sync Todoist tasks. " + error);
+					});
 				}).catch(error => {
-					vscode.window.showErrorMessage("Could not sync Todoist sections. " + error);
+					vscode.window.showErrorMessage("Could not sync Todoist projects. " + error);
 				});
-			}).catch(error => {
-				vscode.window.showErrorMessage("Could not sync Todoist tasks. " + error);
 			});
-		}).catch(error => {
-			vscode.window.showErrorMessage("Could not sync Todoist projects. " + error);
-		});
+			
+		});		
 	}
 
 	// Functions -------------------------------------------------------------------------

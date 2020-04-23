@@ -75,6 +75,7 @@ function formatTasks(tasks: task[]) {
         treeview.tooltip = t.content;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
         treeview.task = t;
+        treeview.contextValue = 'todoistTask';
         treeview.command = {
             command: 'todoist.openTask',
             title: 'Open task',
@@ -106,6 +107,7 @@ function formatProjects(projects: project[]) {
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
         treeview.project = p;
         treeview.iconPath = path.join(__filename, '..', '..', '..', 'media', 'colours', p.color.toString() + '.svg');
+        treeview.contextValue = '';
         displayProjects.push(treeview);
     });
     return displayProjects;
