@@ -4,6 +4,7 @@ import todoistAPIHelper from '../helpers/todoistAPIHelper';
 import task from '../models/task';
 import { todoistTreeView } from '../models/todoistTreeView';
 import settingsHelper from '../helpers/settingsHelper';
+import path = require('path');
 
 export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView> {
 
@@ -104,6 +105,7 @@ function formatProjects(projects: project[]) {
         treeview.tooltip = p.name;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
         treeview.project = p;
+        treeview.iconPath = path.join(__filename, '..', '..', '..', 'media', 'colours', p.color.toString() + '.svg');
         displayProjects.push(treeview);
     });
     return displayProjects;
