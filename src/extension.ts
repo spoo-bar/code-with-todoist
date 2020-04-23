@@ -36,6 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.openTask', (taskId) => {
 		settingsHelper.setSelectedTask(context.workspaceState, parseInt(taskId));
+		vscode.commands.executeCommand('setContext', 'taskSelected', true);
 		taskTreeViewProvider.refresh();
 	}));
 

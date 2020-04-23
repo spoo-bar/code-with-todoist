@@ -2,7 +2,7 @@
 	"name": "code-with-todoist",
 	"displayName": "code with Todoist",
 	"description": "Todoist plugin for vs code",
-	"version": "0.0.1",
+	"version": "0.0.7",
 	"publisher": "Spoorthi Satheesha",
 	"license": "",
 	"engines": {
@@ -62,7 +62,8 @@
 				},
 				{
 					"id": "task",
-					"name": "Task"
+					"name": "Task",
+					"when": "taskSelected"
 				}
 			]
 		},
