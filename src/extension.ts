@@ -12,14 +12,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// On Extension Activation Validating Token -----------------------------------------
 	let apiToken = settingsHelper.getTodoistAPIToken(context.globalState);
-	if(!apiToken) {
+	if (!apiToken) {
 		inputTodoistApiToken();
 	}
 
 	settingsHelper.setSelectedTask(context.workspaceState, 0);
 	const lastSyncTime = new Date(settingsHelper.getTodoistData(context.globalState).lastSyncTime).getTime();
 	const currentTime = new Date().getTime();
-	if(currentTime - lastSyncTime > 600000) { // 10 minutes
+	if (currentTime - lastSyncTime > 600000) { // 10 minutes
 		syncTodoist();
 	}
 
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const taskTreeViewProvider = new taskProvider(context);
 	vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider)
 	vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
-	
+
 	// Commands -------------------------------------------------------------------------
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.updateToken', () => {
@@ -49,7 +49,22 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', () => {
-		vscode.window.showInformationMessage("closed task" + settingsHelper.getSelectedTask(context.workspaceState));
+		let taskId = settingsHelper.getSelectedTask(context.workspaceState);
+		vscode.window.showInformationMessage("Are you sure you want to mark the task as done?", {
+			modal: false
+		}, 'Yes', 'No').then(response => {
+			if (response == 'Yes') {
+				const apiHelper = new todoistAPIHelper(context.globalState);
+				apiHelper.closeOpenTask(taskId).then(response => {
+					if (response) {
+						vscode.commands.executeCommand('setContext', 'taskSelected', false);
+						syncTodoist();
+					}
+				}).catch(err => {
+					vscode.window.showErrorMessage(err);
+				});
+			}
+		});
 	}));
 
 
@@ -68,7 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
 					projectsTreeViewProvider.refresh();
 				}).catch(error => {
 					vscode.window.showErrorMessage("Could not sync Todoist sections. " + error);
-				});				
+				});
 			}).catch(error => {
 				vscode.window.showErrorMessage("Could not sync Todoist tasks. " + error);
 			});
@@ -95,4 +110,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

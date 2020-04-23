@@ -103,6 +103,29 @@ export default class todoistAPIHelper {
         });
     }
 
+    public closeOpenTask(taskId: Number): Promise<boolean> {
+        const url = this.todoistAPIUrl;
+        const jwt = this.apiToken;
+        
+        return new Promise(function (resolve, reject) {
+            let requestUrl = encodeURI(url + 'tasks/' + taskId + '/close');
+            axios.post(requestUrl, {}, {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            }).then(response => {
+                if (parseInt(response.status.toString()) === 204) {
+                    resolve(true);
+                }
+                else {
+                    reject(response.statusText)
+                }
+            }).catch(error => {
+                reject(Error(error));
+            });
+        });
+    }
+
     // TODO : Remove
     public getProjects(): Promise<project[]> {
         const url = this.todoistAPIUrl;
