@@ -37,10 +37,21 @@ export default class todoistAPIHelper {
                     resolve();
                 }
                 else {
-                    reject(Error(response.statusText))
+                    reject(response.statusText)
                 }
             }).catch(error => {
-                reject(Error(error));
+                if(error.code == "ENOTFOUND") {
+                    reject("Check your internet connection.");
+                }
+                else if(error.response.status === 400) {
+                    reject("Ensure Todoist API token is set.");
+                }
+                else if(error.response.status === 403) {
+                    reject("Incorrect Todoist API token. Update the token in the settings.")
+                }
+                else {
+                    reject("Unknown error. " + error.message);
+                }
             });
         });
     }
@@ -66,10 +77,21 @@ export default class todoistAPIHelper {
                     resolve();
                 }
                 else {
-                    reject(Error(response.statusText))
+                    reject(response.statusText)
                 }
             }).catch(error => {
-                reject(Error(error));
+                if(error.code == "ENOTFOUND") {
+                    reject("Check your internet connection.");
+                }
+                else if(error.response.status === 400) {
+                    reject("Ensure Todoist API token is set.");
+                }
+                else if(error.response.status === 403) {
+                    reject("Incorrect Todoist API token. Update the token in the settings.")
+                }
+                else {
+                    reject("Unknown error. " + error.message);
+                }
             });
         });
     }
@@ -95,10 +117,21 @@ export default class todoistAPIHelper {
                     resolve();
                 }
                 else {
-                    reject(Error(response.statusText))
+                    reject(response.statusText)
                 }
             }).catch(error => {
-                reject(Error(error));
+                if(error.code == "ENOTFOUND") {
+                    reject("Check your internet connection.");
+                }
+                else if(error.response.status === 400) {
+                    reject("Ensure Todoist API token is set.");
+                }
+                else if(error.response.status === 403) {
+                    reject("Incorrect Todoist API token. Update the token in the settings.")
+                }
+                else {
+                    reject("Unknown error. " + error.message);
+                }
             });
         });
     }
@@ -121,7 +154,18 @@ export default class todoistAPIHelper {
                     reject(response.statusText)
                 }
             }).catch(error => {
-                reject(Error(error));
+                if(error.code == "ENOTFOUND") {
+                    reject("Check your internet connection.");
+                }
+                else if(error.response.status === 400) {
+                    reject("Ensure Todoist API token is set.");
+                }
+                else if(error.response.status === 403) {
+                    reject("Incorrect Todoist API token. Update the token in the settings.")
+                }
+                else {
+                    reject("Unknown error. " + error.message);
+                }
             });
         });
     }
