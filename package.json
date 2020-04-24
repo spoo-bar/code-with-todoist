@@ -22,10 +22,6 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "todoist.updateToken",
-				"title": "Update Todoist Integration API Token"
-			},
-			{
 				"command": "todoist.sync",
 				"title": "Sync Todoist",
 				"icon":{
@@ -39,6 +35,18 @@
 				"icon": {
 					"light": "media/light_check.svg",
 					"dark": "media/dark_check.svg"
+				}
+			}
+		],
+		"configuration": [
+			{
+				"title": "Code With Todoist",
+				"properties": {
+					"code.todoist.api": {
+						"type":"string",
+						"description": "Todoist Integrations API token",
+						"scope": "application"
+					}
 				}
 			}
 		],
@@ -88,7 +96,7 @@
 		"viewsWelcome": [
 			{
 				"view": "projects",
-				"contents": "No projects were loaded \n\n[Update API Token](command:todoist.updateToken)"
+				"contents": "No projects were loaded.\n___\n1. Check if Todoist API token is set up in File > Preferences > Settings > Code With Todoist.\n\n2. Check if your internet connection is working.\n\n3. Check if your Todoist account has any projects. \n___\nClick refresh in the above toolbar to attempt resync."
 			},
 			{
 				"view": "task",

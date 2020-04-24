@@ -6,34 +6,25 @@ import { projectsProvider } from './features/projectsProvider';
 import todoistAPIHelper from './helpers/todoistAPIHelper';
 import { taskProvider } from './features/taskProvider';
 import task from './models/task';
+import { todoist } from './models/todoist';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
 	// On Extension Activation Validating Token -----------------------------------------
-	let apiToken = settingsHelper.getTodoistAPIToken(context.globalState);
-	if (!apiToken) {
-		inputTodoistApiToken();
-	}
-
-	settingsHelper.setSelectedTask(context.workspaceState, 0);
-	const lastSyncTime = new Date(settingsHelper.getTodoistData(context.globalState).lastSyncTime).getTime();
-	const currentTime = new Date().getTime();
-	if (currentTime - lastSyncTime > 600000) { // 10 minutes
-		syncTodoist();
-	}
-
+	const apiToken = settingsHelper.getTodoistAPIToken();
 	const projectsTreeViewProvider = new projectsProvider(context.globalState);
 	const taskTreeViewProvider = new taskProvider(context);
-	vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider)
-	vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
+
+	if (!apiToken) {
+		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
+	}
+	else {
+		initTreeView();
+	}
 
 	// Commands -------------------------------------------------------------------------
-
-	context.subscriptions.push(vscode.commands.registerCommand('todoist.updateToken', () => {
-		inputTodoistApiToken();
-	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.openTask', (taskId) => {
 		settingsHelper.setSelectedTask(context.workspaceState, parseInt(taskId));
@@ -49,15 +40,20 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(taskUrl))
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', (task : task) => {
-		let taskId : Number;
-		if(task) {
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', (task: task) => {
+		closeSelectedTask(task);
+	}));
+
+	// Functions -------------------------------------------------------------------------
+
+	function closeSelectedTask(task: task) {
+		let taskId: Number;
+		if (task) {
 			taskId = task.id;
 		}
 		else {
 			taskId = settingsHelper.getSelectedTask(context.workspaceState);
 		}
-
 		vscode.window.showInformationMessage("Are you sure you want to mark the task as done?", {
 			modal: false
 		}, 'Yes', 'No').then(response => {
@@ -73,24 +69,34 @@ export function activate(context: vscode.ExtensionContext) {
 				});
 			}
 		});
-	}));
+	}
 
+	function initTreeView() {
+		settingsHelper.setSelectedTask(context.workspaceState, 0);
+		const lastSyncTime = new Date(settingsHelper.getTodoistData(context.globalState).lastSyncTime).getTime();
+		const currentTime = new Date().getTime();
+		if (currentTime - lastSyncTime > 600000) { // 10 minutes
+			syncTodoist();
+		}
+		vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
+		vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
+	}
 
 	function syncTodoist() {
 		const state = context.globalState;
 		const apiHelper = new todoistAPIHelper(state);
 		const projectsTreeViewProvider = new projectsProvider(state);
 
-		const progressOptions :vscode.ProgressOptions = {
+		const progressOptions: vscode.ProgressOptions = {
 			location: vscode.ProgressLocation.Notification,
 			title: "Syncing with Todoist",
 			cancellable: false
 		};
 		vscode.window.withProgress(progressOptions, (progress, token) => {
-			token.onCancellationRequested(() => {});
+			token.onCancellationRequested(() => { });
 			progress.report({ increment: 0 });
-			
-			return  new Promise(resolve => {
+
+			return new Promise(resolve => {
 				apiHelper.syncProjects().then(() => {
 					progress.report({ increment: 33 });
 					apiHelper.syncActiveTasks().then(() => {
@@ -113,23 +119,7 @@ export function activate(context: vscode.ExtensionContext) {
 					vscode.window.showErrorMessage("Could not sync Todoist projects. " + error);
 				});
 			});
-			
-		});		
-	}
 
-	// Functions -------------------------------------------------------------------------
-	function inputTodoistApiToken() {
-		let options: vscode.InputBoxOptions = {
-			ignoreFocusOut: true,
-			placeHolder: '',
-			prompt: 'Enter your Todoist Integrations API Key. \n Found in Settings > Integrations >	API token\n ',
-			value: apiToken
-		};
-		vscode.window.showInputBox(options).then(input => {
-			if (input) {
-				settingsHelper.setTodoistAPIToken(context.globalState, input);
-				apiToken = settingsHelper.getTodoistAPIToken(context.globalState);
-			}
 		});
 	}
 }

@@ -8,14 +8,8 @@ const selectedTask = "todoistSelectedTask"
 export default class settingsHelper {
 
 
-    public static getTodoistAPIToken(context: vscode.Memento): string | undefined {
-        return context.get<string>(todoistAPIToken);
-    }
-
-    public static setTodoistAPIToken(context: vscode.Memento, apiToken: string): void {
-        // TODO : validate the token
-        context.update(todoistAPIToken, apiToken);
-        return;
+    public static getTodoistAPIToken(): string | undefined {
+        return vscode.workspace.getConfiguration().get<string>("code.todoist.api");
     }
 
     public static getTodoistData(context: vscode.Memento): todoist {

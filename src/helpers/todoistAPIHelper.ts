@@ -12,7 +12,7 @@ export default class todoistAPIHelper {
     private state: vscode.Memento;
 
     constructor(context: vscode.Memento) {
-        this.apiToken = settingsHelper.getTodoistAPIToken(context)!;
+        this.apiToken = settingsHelper.getTodoistAPIToken()!;
         this.state = context;
     }
 
