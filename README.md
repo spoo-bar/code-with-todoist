@@ -24,8 +24,6 @@ In case you need to update your token, you can run the `Update Token` command fr
 
 ## TODO
 
-* When sync fails remove the progress indicator
-* Proper error message when sync fails because not connected to internet
 * Parse //TODO in code and import to Todoist
 * Inline show the imported todos
 
