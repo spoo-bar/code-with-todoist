@@ -10,9 +10,7 @@ To access your Todoist tasks, you will need to add your Todoist API token.
 
 You can get at your API token at [here](https://todoist.com/prefs/integrations)
 
-The first time you try to access the extension, you will be asked for this token. Without providing this, none of the features of the extension will be available.
-
-In case you need to update your token, you can run the `Update Token` command from the Command Pallatte (`Ctrl+Shift+P`) 
+Set the API token under File > Preferences > Settings > Code With Todoist > Todoist Integrations API token
 
 ## Features
 
