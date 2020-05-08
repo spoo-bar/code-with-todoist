@@ -6,7 +6,7 @@ import { projectsProvider } from './features/projectsProvider';
 import todoistAPIHelper from './helpers/todoistAPIHelper';
 import { taskProvider } from './features/taskProvider';
 import task from './models/task';
-import { todoist } from './models/todoist';
+import { todosProvider } from './features/todosProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -16,12 +16,18 @@ export function activate(context: vscode.ExtensionContext) {
 	const apiToken = settingsHelper.getTodoistAPIToken();
 	const projectsTreeViewProvider = new projectsProvider(context.globalState);
 	const taskTreeViewProvider = new taskProvider(context);
+	const todoViewProvider = new todosProvider();
 
 	if (!apiToken) {
 		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
 	}
 	else {
 		initTreeView();
+	}
+
+	if(vscode.workspace.name) {
+		vscode.commands.executeCommand('setContext', 'workspaceOpen', true);
+		
 	}
 
 	// Commands -------------------------------------------------------------------------
@@ -44,7 +50,34 @@ export function activate(context: vscode.ExtensionContext) {
 		closeSelectedTask(task);
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.openCustomTask', (filePath : vscode.Uri, line : number, column : number) => {
+		openCustomTask(filePath, line, column);
+	}));
+
+	// Event Handlers  -------------------------------------------------------------------
+
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(function() {
+		if(vscode.workspace.name) {
+			vscode.commands.executeCommand('setContext', 'workspaceOpen', true);
+		}
+		else {
+			vscode.commands.executeCommand('setContext', 'workspaceOpen', false);
+		}
+	}));
+
 	// Functions -------------------------------------------------------------------------
+
+	function openCustomTask(filePath: vscode.Uri, line: number, column: number) {
+		vscode.workspace.openTextDocument(filePath).then(document => {
+			vscode.window.showTextDocument(document).then(editor => {
+				let highLightStart = new vscode.Position(line, 0);
+				let highLightStop = new vscode.Position(line, column);
+
+				editor.selection = new vscode.Selection(highLightStart, highLightStop);
+				editor.revealRange(editor.selection, vscode.TextEditorRevealType.InCenter);
+			});
+		});
+	}
 
 	function closeSelectedTask(task: task) {
 		let taskId: Number;
@@ -79,10 +112,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		const currentTime = new Date().getTime();
 		if (currentTime - lastSyncTime > 600000) { // 10 minutes
-			syncTodoist();
+			//syncTodoist();
 		}
 		vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
 		vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
+		vscode.window.registerTreeDataProvider('todos', todoViewProvider);
 		
 	}
 

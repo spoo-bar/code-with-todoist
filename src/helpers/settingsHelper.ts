@@ -12,6 +12,10 @@ export default class settingsHelper {
         return vscode.workspace.getConfiguration().get<string>("code.todoist.api");
     }
 
+    public static useGitIgnore(): boolean | undefined {
+        return vscode.workspace.getConfiguration().get<boolean>("code.todoist.useGitIgnore");
+    }
+
     public static getTodoistData(context: vscode.Memento): todoist {
         const data = context.get<string>(todoistData);
         if (data) {
