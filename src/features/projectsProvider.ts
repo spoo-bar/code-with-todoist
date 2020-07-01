@@ -10,7 +10,7 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
 
     private apiHelper: todoistAPIHelper;
     private state: vscode.Memento;
-    
+
     private _onDidChangeTreeData: vscode.EventEmitter<todoistTreeView | undefined> = new vscode.EventEmitter<todoistTreeView | undefined>();
     onDidChangeTreeData?: vscode.Event<todoistTreeView | null | undefined> | undefined = this._onDidChangeTreeData.event;
 
@@ -24,6 +24,10 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
     }
 
     getTreeItem(element: todoistTreeView): vscode.TreeItem | Thenable<vscode.TreeItem> {
+        const data = settingsHelper.getTodoistData(this.state);
+        if (data.tasks.some(task => task.parent?.toString() == element.id)) {
+            element.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+        }
         return element;
     }
 
@@ -39,7 +43,9 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
                     treeView.push(...projects);
                 }
                 if (data.tasks && data.tasks.length > 0) {
-                    let tasks = formatTasks(data.tasks.filter(t => t.project_id.toString() === element.id));
+                    let tasks = formatTasks(data.tasks.filter(
+                        t => (!t.parent && t.project_id.toString() === element.id)
+                            || t.parent?.toString() == element.id));
                     treeView.push(...tasks);
                     resolve(treeView);
                 }
@@ -70,7 +76,7 @@ function formatTasks(tasks: task[]) {
     let activeTasks: todoistTreeView[] = [];
     tasks = tasks.sort((a, b) => a.order > b.order ? 1 : 0);
     tasks.forEach(t => {
-        let treeview = new todoistTreeView(getIndent(t, tasks) + t.content);
+        let treeview = new todoistTreeView(t.content);
         treeview.id = t.id.toString();
         treeview.tooltip = t.content;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
@@ -86,15 +92,6 @@ function formatTasks(tasks: task[]) {
         activeTasks.push(treeview);
     });
     return activeTasks;
-}
-
-function getIndent(task: task, tasks: task[]): string {
-    if (task.parent) {
-        let parentTask = tasks.filter(t => t.id === task.parent);
-        if (parentTask.length > 0)
-            return '    ' + getIndent(parentTask[0], tasks);
-    }
-    return '';
 }
 
 function formatProjects(projects: project[]) {
