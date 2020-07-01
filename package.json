@@ -13,7 +13,10 @@
 	"categories": [
 		"Other"
 	],
-	"keywords": ["todoist", "productivity"],
+	"keywords": [
+		"todoist",
+		"productivity"
+	],
 	"preview": true,
 	"activationEvents": [
 		"onView:projects"
@@ -24,7 +27,7 @@
 			{
 				"command": "todoist.sync",
 				"title": "Sync Todoist",
-				"icon":{
+				"icon": {
 					"light": "media/light_refresh.svg",
 					"dark": "media/dark_refresh.svg"
 				}
@@ -43,12 +46,12 @@
 				"title": "Code With Todoist",
 				"properties": {
 					"code.todoist.api": {
-						"type":"string",
+						"type": "string",
 						"description": "Todoist Integrations API token",
 						"scope": "application"
 					},
 					"code.todoist.useGitIgnore": {
-						"type":"boolean",
+						"type": "boolean",
 						"default": true,
 						"description": "Use .gitignore to ignore files during //TODO parsing (if it exists)",
 						"scope": "application"
