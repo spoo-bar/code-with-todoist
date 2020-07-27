@@ -112,8 +112,9 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		const currentTime = new Date().getTime();
 		if (currentTime - lastSyncTime > 600000) { // 10 minutes
-			//syncTodoist();
+			syncTodoist();
 		}
+		
 		vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
 		vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
 		vscode.window.registerTreeDataProvider('todos', todoViewProvider);

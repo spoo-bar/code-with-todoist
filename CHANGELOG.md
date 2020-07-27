@@ -4,6 +4,21 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unreleased
+
+### Added
+
+### Changed 
+
+### Removed
+
+### Fixed
+
+## [0.2.1] - 2020-07-27
+
+### Fixed
+* Fixing bug where auto sync was not happening on extension load
+
 ## [0.2.0] - 2020-07-24
 
 ### Changed 
