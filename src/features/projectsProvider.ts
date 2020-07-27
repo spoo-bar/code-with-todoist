@@ -5,6 +5,7 @@ import task from '../models/task';
 import { todoistTreeView } from '../models/todoistTreeView';
 import settingsHelper from '../helpers/settingsHelper';
 import path = require('path');
+import section from '../models/section';
 
 export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView> {
 
@@ -42,11 +43,26 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
                     let projects = formatProjects(data.projects.filter(p => p.parent && p.parent == parseInt(element.id!)));
                     treeView.push(...projects);
                 }
+                if (data.sections && data.sections.length > 0) {
+                    let sections = formatSections(data.sections.filter(s => s.project_id.toString() === element.id));
+                    treeView.push(...sections);
+                }
                 if (data.tasks && data.tasks.length > 0) {
-                    let tasks = formatTasks(data.tasks.filter(
-                        t => (!t.parent && t.project_id.toString() === element.id)
-                            || t.parent?.toString() == element.id));
-                    treeView.push(...tasks);
+                    let tasks :task[] = [];
+                    
+                    if(element.project) {
+                        tasks = (data.tasks.filter(
+                            t => t.project_id.toString() === element.id && t.section_id.toString() === "0" && !t.parent));
+                    }
+                    if(element.section) {
+                        tasks = (data.tasks.filter(
+                            t => (t.section_id.toString() === element.id)));
+                    }
+                    if(element.task) {
+                        tasks = (data.tasks.filter(
+                            t => t.parent?.toString() === element.id));
+                    }
+                    treeView.push(...formatTasks(tasks));
                     resolve(treeView);
                 }
                 else {
@@ -93,6 +109,22 @@ function formatTasks(tasks: task[]) {
     });
     return activeTasks;
 }
+
+function formatSections(sections: section[]) {
+    let displaySections: todoistTreeView[] = [];
+    sections = sections.sort((a, b) => a.order > b.order ? 1 : 0);
+    sections.forEach(s => {
+        let treeview = new todoistTreeView(s.name);
+        treeview.id = s.id.toString();
+        treeview.tooltip = s.name;
+        treeview.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+        treeview.section = s;
+        treeview.contextValue = '';
+        displaySections.push(treeview);
+    });
+    return displaySections;
+}
+
 
 function formatProjects(projects: project[]) {
     let displayProjects: todoistTreeView[] = [];

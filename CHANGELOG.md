@@ -7,6 +7,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## Unreleased
 
 ### Added
+* Adding support for [Sections](https://get.todoist.help/hc/en-us/articles/360003788739-Sections)
 
 ### Changed 
 
