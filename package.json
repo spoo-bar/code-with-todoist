@@ -2,7 +2,7 @@
 	"name": "code-with-todoist",
 	"displayName": "code with Todoist",
 	"description": "Todoist plugin for vs code",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"publisher": "Spoorthi",
 	"icon": "media/extension_icon.png",
 	"license": "SEE LICENSE IN LICENSE",
@@ -39,6 +39,14 @@
 					"light": "media/light_check.svg",
 					"dark": "media/dark_check.svg"
 				}
+			},
+			{
+				"command": "todoist.addProject",
+				"title": "Add Todoist Project",
+				"icon": {
+					"light": "media/light_add.svg",
+					"dark": "media/dark_add.svg"
+				}
 			}
 		],
 		"configuration": [
@@ -68,6 +76,11 @@
 				},
 				{
 					"command": "todoist.sync",
+					"when": "view == projects",
+					"group": "navigation"
+				},
+				{
+					"command": "todoist.addProject",
 					"when": "view == projects",
 					"group": "navigation"
 				}
