@@ -90,7 +90,7 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
 
 function formatTasks(tasks: task[]) {
     let activeTasks: todoistTreeView[] = [];
-    tasks = tasks.sort((a, b) => a.order > b.order ? 1 : 0);
+    tasks = tasks.sort((a, b) => a.order > b.order ? 1 : -1);
     tasks.forEach(t => {
         let treeview = new todoistTreeView(t.content);
         treeview.id = t.id.toString();
@@ -112,7 +112,7 @@ function formatTasks(tasks: task[]) {
 
 function formatSections(sections: section[]) {
     let displaySections: todoistTreeView[] = [];
-    sections = sections.sort((a, b) => a.order > b.order ? 1 : 0);
+    sections = sections.sort((a, b) => a.order > b.order ? 1 : -1);
     sections.forEach(s => {
         let treeview = new todoistTreeView(s.name);
         treeview.id = s.id.toString();
