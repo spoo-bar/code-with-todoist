@@ -7,13 +7,25 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## Unreleased
 
 ### Added
-* Adding support for [Sections](https://get.todoist.help/hc/en-us/articles/360003788739-Sections)
 
 ### Changed 
 
 ### Removed
 
 ### Fixed
+
+## [0.3.0] - 2020-09-23
+
+### Added
+* Adding support for [Sections](https://get.todoist.help/hc/en-us/articles/360003788739-Sections)
+* Create new Project (only parent Projects currently supported)
+
+### Changed 
+
+### Removed
+
+### Fixed
+* Fixed ordering of tasks and subtasks being incorrect
 
 ## [0.2.1] - 2020-07-27
 

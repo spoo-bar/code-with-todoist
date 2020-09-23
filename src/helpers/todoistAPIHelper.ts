@@ -170,6 +170,42 @@ export default class todoistAPIHelper {
         });
     }
 
+    public createProject(projectName: string): Promise<project> {
+        const url = this.todoistAPIUrl;
+        const jwt = this.apiToken;
+
+        return new Promise(function (resolve, reject) {
+            axios.post(encodeURI(url + 'projects'), {
+                name: projectName
+            }, {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            }).then(response => {
+                if (response.status === 200) {
+                    let newProject = project.deserialize(response.data);
+                    resolve(newProject);
+                }
+                else {
+                    reject(response.statusText)
+                }
+            }).catch(error => {
+                if(error.code == "ENOTFOUND") {
+                    reject("Check your internet connection.");
+                }
+                else if(error.response.status === 400) {
+                    reject("Ensure Todoist API token is set.");
+                }
+                else if(error.response.status === 403) {
+                    reject("Incorrect Todoist API token. Update the token in the settings.")
+                }
+                else {
+                    reject("Unknown error. " + error.message);
+                }
+            });
+        });
+    }
+
     // TODO : Remove
     public getProjects(): Promise<project[]> {
         const url = this.todoistAPIUrl;
