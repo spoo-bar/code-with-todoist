@@ -71,7 +71,8 @@ export default class todoistAPIHelper {
                     let data = settingsHelper.getTodoistData(state);
                     data.tasks = [];
                     response.data.forEach((element: any) => {
-                        data.tasks.push(task.deserialize(element));
+                        if(!element.completed)
+                            data.tasks.push(task.deserialize(element));
                     });
                     settingsHelper.setTodoistData(state, data);
                     resolve();
