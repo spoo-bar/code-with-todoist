@@ -58,6 +58,12 @@
 						"description": "Todoist Integrations API token",
 						"scope": "application"
 					},
+					"code.todoist.showTodaysTasks": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show today's tasks at the top of the sidebar",
+						"scope": "application"
+					},
 					"code.todoist.useGitIgnore": {
 						"type": "boolean",
 						"default": true,
@@ -96,6 +102,11 @@
 		"views": {
 			"code-with-todoist": [
 				{
+					"id": "today",
+					"name": "Today",
+					"when": "showTodaysTasks"
+				},
+				{
 					"id": "projects",
 					"name": "Projects"
 				},
@@ -128,6 +139,10 @@
 			{
 				"view": "task",
 				"contents": "No task was selected."
+			},
+			{
+				"view": "today",
+				"contents": "No tasks today. 🎉"
 			}
 		]
 	},
