@@ -97,6 +97,7 @@ function formatTasks(tasks: task[]) {
         treeview.tooltip = t.content;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
         treeview.task = t;
+        treeview.iconPath = path.join(__filename, '..', '..', '..', 'media', 'priority', t.priority.toString() + '.svg');
         treeview.contextValue = 'todoistTask';
         treeview.command = {
             command: 'todoist.openTask',

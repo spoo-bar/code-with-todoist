@@ -7,12 +7,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## Unreleased
 
 ### Added
+* Show today's tasks at the top of the sideview
+* Show priority bubbles for tasks
 
 ### Changed 
 
 ### Removed
 
 ### Fixed
+* Hide completed subtasks Thanks to [@corderop](https://github.com/corderop)
 
 ## [0.3.0] - 2020-09-23
 
