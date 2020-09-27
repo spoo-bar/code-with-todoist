@@ -1,5 +1,12 @@
 import { Url } from 'url';
 
+function strikeThroughContent(text: string) {
+    return text
+        .split('')
+        .map( ( char: string ) => char + '\u0336')
+        .join('')
+}
+
 export default class task {
 
     id!: Number;
@@ -16,6 +23,11 @@ export default class task {
     comment_count!: Number;
 
     public static deserialize(json: any) : task {
+
+        // Completed subtasks cross out
+        if(json.completed)
+            json.content = strikeThroughContent(json.content);
+            
         //TODO : Validate before returning
         return Object.assign(new task(), json);        
     }
