@@ -7,6 +7,7 @@ import todoistAPIHelper from './helpers/todoistAPIHelper';
 import { taskProvider } from './features/taskProvider';
 import task from './models/task';
 import { todosProvider } from './features/todosProvider';
+import { todayTaskProvider } from './features/todayTaskProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -17,12 +18,17 @@ export function activate(context: vscode.ExtensionContext) {
 	const projectsTreeViewProvider = new projectsProvider(context.globalState);
 	const taskTreeViewProvider = new taskProvider(context);
 	const todoViewProvider = new todosProvider();
+	const todayTaskViewProvider = new todayTaskProvider(context.globalState);
 
 	if (!apiToken) {
 		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
 	}
 	else {
 		initTreeView();
+	}
+
+	if(settingsHelper.showTodaysTasks()) {
+		vscode.commands.executeCommand('setContext', 'showTodaysTasks', true);
 	}
 
 	// if(vscode.workspace.name) {
@@ -130,6 +136,7 @@ export function activate(context: vscode.ExtensionContext) {
 			syncTodoist();
 		}
 		
+		vscode.window.registerTreeDataProvider('today', todayTaskViewProvider);
 		vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
 		vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
 		vscode.window.registerTreeDataProvider('todos', todoViewProvider);
@@ -140,6 +147,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const state = context.globalState;
 		const apiHelper = new todoistAPIHelper(state);
 		const projectsTreeViewProvider = new projectsProvider(state);
+		const todayTaskTreeViewProvider = new todayTaskProvider(state);
 
 		const progressOptions: vscode.ProgressOptions = {
 			location: vscode.ProgressLocation.Notification,
@@ -161,6 +169,8 @@ export function activate(context: vscode.ExtensionContext) {
 							data.lastSyncTime = new Date();
 							settingsHelper.setTodoistData(state, data);
 							vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
+							vscode.window.registerTreeDataProvider('today', todayTaskTreeViewProvider);
+							todayTaskTreeViewProvider.refresh();
 							projectsTreeViewProvider.refresh();
 							resolve();
 						}).catch(error => {
