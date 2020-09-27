@@ -16,6 +16,10 @@ export default class settingsHelper {
         return vscode.workspace.getConfiguration().get<boolean>("code.todoist.useGitIgnore");
     }
 
+    public static showTodaysTasks(): boolean | undefined {
+        return vscode.workspace.getConfiguration().get<boolean>("code.todoist.showTodaysTasks");
+    }
+
     public static getTodoistData(context: vscode.Memento): todoist {
         const data = context.get<string>(todoistData);
         if (data) {
