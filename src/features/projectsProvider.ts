@@ -56,7 +56,7 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
                     }
                     if(element.section) {
                         tasks = (data.tasks.filter(
-                            t => (t.section_id.toString() === element.id)));
+                            t => (t.section_id.toString() === element.id && !t.parent)));
                     }
                     if(element.task) {
                         tasks = (data.tasks.filter(
