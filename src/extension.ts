@@ -9,6 +9,7 @@ import task from './models/task';
 import { todosProvider } from './features/todosProvider';
 import { todayTaskProvider } from './features/todayTaskProvider';
 
+let syncInterval!: NodeJS.Timeout;
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -24,6 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
 	}
 	else {
+		syncInterval = setInterval(syncTodoist, settingsHelper.getSyncInterval());
 		initTreeView();
 	}
 
@@ -192,4 +194,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {
+	clearInterval(syncInterval);
+ }

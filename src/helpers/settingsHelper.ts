@@ -20,6 +20,10 @@ export default class settingsHelper {
         return vscode.workspace.getConfiguration().get<boolean>("code.todoist.showTodaysTasks");
     }
 
+    public static getSyncInterval(): number {
+        return vscode.workspace.getConfiguration().get<number>("code.todoist.syncInternval") ?? 600000;
+    }
+
     public static getTodoistData(context: vscode.Memento): todoist {
         const data = context.get<string>(todoistData);
         if (data) {
