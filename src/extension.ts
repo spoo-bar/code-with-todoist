@@ -158,15 +158,15 @@ export function activate(context: vscode.ExtensionContext) {
 		};
 		vscode.window.withProgress(progressOptions, (progress, token) => {
 			token.onCancellationRequested(() => { });
-			progress.report({ increment: 1 });
+			progress.report({ message: ' : Projects', increment: 1 });
 
 			return new Promise(resolve => {
 				apiHelper.syncProjects().then(() => {
-					progress.report({ increment: 33 });
+					progress.report({ message: ' : Sections', increment: 33 });
 					apiHelper.syncActiveTasks().then(() => {
-						progress.report({ increment: 33 });
+						progress.report({ message: ' : Tasks', increment: 33 });
 						apiHelper.syncSections().then(() => {
-							progress.report({ increment: 33, message: "Completed sync!" });
+							progress.report({ increment: 33, message: "Syncing: Completed" });
 							let data = settingsHelper.getTodoistData(state);
 							data.lastSyncTime = new Date();
 							settingsHelper.setTodoistData(state, data);
