@@ -2,7 +2,7 @@
 	"name": "code-with-todoist",
 	"displayName": "code with Todoist",
 	"description": "Todoist plugin for vs code",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"publisher": "Spoorthi",
 	"icon": "media/extension_icon.png",
 	"license": "SEE LICENSE IN LICENSE",
@@ -17,7 +17,7 @@
 		"todoist",
 		"productivity"
 	],
-	"preview": true,
+	"preview": false,
 	"activationEvents": [
 		"onView:projects"
 	],
@@ -62,6 +62,12 @@
 						"type": "boolean",
 						"default": true,
 						"description": "Show today's tasks at the top of the sidebar",
+						"scope": "application"
+					},
+					"code.todoist.syncInternval": {
+						"type": "number",
+						"default": 600000,
+						"description": "Value in milliseconds at which interval Todoist data is synced.",
 						"scope": "application"
 					},
 					"code.todoist.useGitIgnore": {
