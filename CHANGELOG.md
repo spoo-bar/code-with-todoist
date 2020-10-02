@@ -14,6 +14,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 
+## [0.4.2] - 2020-10-02
+
+### Fixed
+* Fixed publish error in README.md 
 
 ## [0.4.1] - 2020-10-02
 
