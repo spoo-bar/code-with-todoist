@@ -15,6 +15,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 
+## [0.4.1] - 2020-10-02
+
+### Added
+* Configuration - Control how often syncing of Todoist projects/tasks occurs
+* Detailed message on what is being synced
+
+
 ## [0.4.0] - 2020-09-30
 
 ### Added

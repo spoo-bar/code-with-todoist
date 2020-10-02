@@ -1,28 +1,53 @@
 # code-with-todoist
 
-This extension provides some of the [Todoist](https://todoist.com/) features on vscode.
+[![Version](https://vsmarketplacebadge.apphb.com/version/spoorthi.code-with-todoist.svg)](https://marketplace.visualstudio.com/items?itemName=spoorthi.code-with-todoist) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/spoorthi.code-with-todoist.svg)](https://marketplace.visualstudio.com/items?itemName=spoorthi.code-with-todoist) 
 
-This extension is still in preview.
+This extension allows you to track your [Todoist](https://todoist.com/) tasks from [vscode](https://code.visualstudio.com/).
 
 ## Configuration
 
-To access your Todoist tasks, you will need to add your Todoist API token. 
+Before you can use the extension, you have to set up the following configuration under 
 
-You can get at your API token at [here](https://todoist.com/prefs/integrations)
+File > Preferences > Settings > Code With Todoist
 
-Set the API token under File > Preferences > Settings > Code With Todoist > Todoist Integrations API token
+`code.todoist.api` - To access yor Todoist tasks, you will need to add your Todoist API token. You can get your API token [here](https://todoist.com/prefs/integrations)
+
+`code.todoist.showTodaysTasks` - Enabling this shows today's tasks at the top of the extension sidebar view.
+
+`code.todoist.syncInternval` - Value in milliseconds at which interval Todoist data is synced. 
+
+`code.todoist.useGitIgnore` - Upcoming feature. This setting is currently not in use.
 
 ## Features
 
-* View projects
-* View tasks
-* Mark task as done
+### View projects with colour coding
 
-![Screenshot of the extension](media/features/view.png "Screenshot of the extension")
+![Screenshot of Todoist projects](media/features/projects.png "Screenshot of Todoist projects")
 
-## TODO
+### View tasks and subtasks under each project and section with its priority
 
-* Parse //TODO in code and import to Todoist
-* Inline show the imported todos
+![Screenshot of Todoist tasks](media/features/tasks.PNG "Screenshot of Todoist tasks")
 
-**Enjoy!**
+1. Tasks with Priority 1 have red circle before them.
+2. Tasks with Priority 2 have orange circle before them.
+3. Tasks with Priority 3 have blue circle before them.
+4. Tasks with Priority 4 (default) have grey circle before them. 
+
+### View Task details and mark it as done
+
+![Screenshot of individual Todoist task](media/features/task.png "Screenshot of individual Todoist task")
+
+### Show today's tasks
+
+![Screenshot of today's tasks](media/features/today.png "Screenshot of today's tasks")
+
+### Offline Support
+
+All Todoist data is cached locally and can be viewed without Internet access.
+
+Todoist Data is synced every 10 minutes by default, but this can be overriden in the Extension Settings.
+
+## Known issues
+
+* Markdown support in Task names - Unsure if vscode extension API supports this.
+
