@@ -61,21 +61,21 @@ export function activate(context: vscode.ExtensionContext) {
 		openCustomTask(filePath, line, column);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('todoist.addProject', () => {
-		vscode.window.showInputBox({
-			prompt: 'New Project Name',
-		}).then(projectName =>  {
-			if(projectName) {
-				vscode.window.showInformationMessage('Project : ' + projectName + ' is being created.');
-				const state = context.globalState;
-				const apiHelper = new todoistAPIHelper(state);
-				apiHelper.createProject(projectName).then(project => {
-					syncTodoist();
-					vscode.window.showInformationMessage('Project : ' + project.name + ' has been created.');
-				});
-			}
-		});
-	}));
+	// context.subscriptions.push(vscode.commands.registerCommand('todoist.addProject', () => {
+	// 	vscode.window.showInputBox({
+	// 		prompt: 'New Project Name',
+	// 	}).then(projectName =>  {
+	// 		if(projectName) {
+	// 			vscode.window.showInformationMessage('Project : ' + projectName + ' is being created.');
+	// 			const state = context.globalState;
+	// 			const apiHelper = new todoistAPIHelper(state);
+	// 			apiHelper.createProject(projectName).then(project => {
+	// 				syncTodoist();
+	// 				vscode.window.showInformationMessage('Project : ' + project.name + ' has been created.');
+	// 			});
+	// 		}
+	// 	});
+	// }));
 
 	// Event Handlers  -------------------------------------------------------------------
 

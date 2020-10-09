@@ -14,6 +14,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 
+## [0.4.3] - 2020-10-09
+
+### Fixed
+* [#15](https://github.com/spoon611/code-with-todoist/issues/15) - Command 'todoist.sync' not found 
+
+### Removed
+* Create new project functionality
+
 ## [0.4.2] - 2020-10-02
 
 ### Fixed
