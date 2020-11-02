@@ -87,7 +87,7 @@
 			"view/item/context": [
 				{
 					"command": "todoist.closeTask",
-					"when": "view == projects && viewItem == todoistTask",
+					"when": "viewItem == todoistTask",
 					"group": "inline"
 				}
 			]
