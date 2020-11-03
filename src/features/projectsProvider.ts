@@ -136,9 +136,16 @@ function formatProjects(projects: project[]) {
         treeview.tooltip = p.name;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
         treeview.project = p;
-        treeview.iconPath = path.join(__filename, '..', '..', '..', 'media', 'colours', p.color.toString() + '.svg');
+        treeview.iconPath = getIconPath(p);
         treeview.contextValue = '';
         displayProjects.push(treeview);
     });
     return displayProjects;
+
+    function getIconPath(p: project): string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri; } | vscode.ThemeIcon | undefined {
+        if(p.shared) {
+            return path.join(__filename, '..', '..', '..', 'media', 'shared', p.color.toString() + '.svg');
+        }
+        return path.join(__filename, '..', '..', '..', 'media', 'colours', p.color.toString() + '.svg');
+    }
 }

@@ -8,6 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 * Mark task as done from Today view
+* Show different icon for shared projects
 
 ### Changed 
 
