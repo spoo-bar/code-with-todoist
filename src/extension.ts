@@ -162,7 +162,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (currentTime - lastSyncTime > settingsHelper.getSyncInterval()) { // 10 minutes
 			syncTodoist();
 		}
-		
+
 		vscode.window.registerTreeDataProvider('today', todayTaskViewProvider);
 		vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
 		vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
@@ -176,6 +176,7 @@ export function activate(context: vscode.ExtensionContext) {
 			let projectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
 			workspaceProjectTreeViewProvider = new workspaceProjectProvider(context.globalState, projectId);
 			vscode.window.registerTreeDataProvider('workspaceProject', workspaceProjectTreeViewProvider);
+			vscode.window.registerTreeDataProvider('workspaceProjectExt', workspaceProjectTreeViewProvider);
 		}
 	}
 

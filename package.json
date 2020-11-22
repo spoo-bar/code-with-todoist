@@ -94,7 +94,7 @@
 				},
 				{
 					"command": "todoist.attachproject",
-					"when": "view == workspaceProject",
+					"when": "view == workspaceProject || view == workspaceProjectExt",
 					"group": "navigation"
 				}
 			],
@@ -112,6 +112,10 @@
 					"id": "today",
 					"name": "Today",
 					"when": "showTodaysTasks"
+				},
+				{
+					"id": "workspaceProjectExt",
+					"name": "Workspace Project"
 				},
 				{
 					"id": "projects",
