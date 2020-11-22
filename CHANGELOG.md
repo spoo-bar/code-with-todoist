@@ -4,17 +4,13 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## Unreleased
+## [0.5.0] - 2020-11-22
 
 ### Added
 * Mark task as done from Today view
 * Show different icon for shared projects
+* Attach Todoist projects to vscode workspaces
 
-### Changed 
-
-### Removed
-
-### Fixed
 
 ## [0.4.3] - 2020-10-09
 

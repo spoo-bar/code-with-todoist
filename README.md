@@ -16,8 +16,6 @@ File > Preferences > Settings > Code With Todoist
 
 `code.todoist.syncInternval` - Value in milliseconds at which interval Todoist data is synced. 
 
-`code.todoist.useGitIgnore` - Upcoming feature. This setting is currently not in use.
-
 ## Features
 
 ### View projects with colour coding
@@ -41,6 +39,10 @@ File > Preferences > Settings > Code With Todoist
 
 ![Screenshot of today's tasks](media/features/today.png "Screenshot of today's tasks")
 
+### Attach Todoist projects to vscode workspaces
+
+![Screenshot of attached projects](media/features/projectworkspace.png "Screenshot of attached projects")
+
 ### Offline Support
 
 All Todoist data is cached locally and can be viewed without Internet access.
@@ -50,4 +52,3 @@ Todoist Data is synced every 10 minutes by default, but this can be overriden in
 ## Known issues
 
 * Markdown support in Task names - Unsure if vscode extension API supports this.
-
