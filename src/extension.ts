@@ -8,6 +8,8 @@ import { taskProvider } from './features/taskProvider';
 import task from './models/task';
 import { todosProvider } from './features/todosProvider';
 import { todayTaskProvider } from './features/todayTaskProvider';
+import { workspaceProjectProvider } from './features/workspaceProjectProvider';
+import { todoist } from './models/todoist';
 
 let syncInterval!: NodeJS.Timeout;
 // this method is called when your extension is activated
@@ -20,6 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const taskTreeViewProvider = new taskProvider(context);
 	const todoViewProvider = new todosProvider();
 	const todayTaskViewProvider = new todayTaskProvider(context.globalState);
+	let workspaceProjectTreeViewProvider : workspaceProjectProvider;
 
 	if (!apiToken) {
 		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
@@ -59,6 +62,28 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.openCustomTask', (filePath : vscode.Uri, line : number, column : number) => {
 		openCustomTask(filePath, line, column);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.attachproject', () => {
+		if(vscode.workspace.name) {
+			let workspaceName = vscode.workspace.name;
+			var projectId = settingsHelper.getWorkspaceProject(context.globalState, workspaceName);
+			if(projectId == 0) {
+				attachworkspaceProject();
+			}
+			else {
+				vscode.window.showInformationMessage("There is already a project attached to this workspace. Do you want to overwrite it?", {
+					modal: false
+				}, 'Yes', 'No').then(response => {
+					if (response == 'Yes') {
+						attachworkspaceProject();
+					}
+				});
+			}
+		}
+		else {
+			vscode.window.showErrorMessage("You have not yet opened a folder. Open a folder and retry.");
+		}
 	}));
 
 	// context.subscriptions.push(vscode.commands.registerCommand('todoist.addProject', () => {
@@ -134,7 +159,7 @@ export function activate(context: vscode.ExtensionContext) {
 			lastSyncTime = new Date(0, 0, 0).getTime();
 		}
 		const currentTime = new Date().getTime();
-		if (currentTime - lastSyncTime > 600000) { // 10 minutes
+		if (currentTime - lastSyncTime > settingsHelper.getSyncInterval()) { // 10 minutes
 			syncTodoist();
 		}
 		
@@ -143,6 +168,15 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
 		vscode.window.registerTreeDataProvider('todos', todoViewProvider);
 		
+		showWorkspaceProjects();
+	}
+
+	function showWorkspaceProjects() {
+		if (vscode.workspace.name) {
+			let projectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
+			workspaceProjectTreeViewProvider = new workspaceProjectProvider(context.globalState, projectId);
+			vscode.window.registerTreeDataProvider('workspaceProject', workspaceProjectTreeViewProvider);
+		}
 	}
 
 	function syncTodoist() {
@@ -172,8 +206,10 @@ export function activate(context: vscode.ExtensionContext) {
 							settingsHelper.setTodoistData(state, data);
 							vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
 							vscode.window.registerTreeDataProvider('today', todayTaskTreeViewProvider);
+							showWorkspaceProjects();
 							todayTaskTreeViewProvider.refresh();
 							projectsTreeViewProvider.refresh();
+							workspaceProjectTreeViewProvider.refresh();
 							resolve();
 						}).catch(error => {
 							vscode.window.showErrorMessage("Todoist Sync failed. " + error);
@@ -189,6 +225,20 @@ export function activate(context: vscode.ExtensionContext) {
 				});
 			});
 
+		});
+	}
+
+	function attachworkspaceProject() {
+		let workspaceName = vscode.workspace.name;
+		let projects = settingsHelper.getTodoistData(context.globalState).projects;
+		vscode.window.showQuickPick(projects, {
+			canPickMany: false,			
+		}).then(selectedProject => {
+			if(selectedProject) {
+				settingsHelper.setWorkspaceProject(context.globalState, workspaceName!, selectedProject.id);
+				showWorkspaceProjects();
+				workspaceProjectTreeViewProvider.refresh();
+			}
 		});
 	}
 }

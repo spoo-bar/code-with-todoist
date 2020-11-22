@@ -1,6 +1,12 @@
 import * as vscode from 'vscode';
 
-export default class project {
+export default class project implements vscode.QuickPickItem {
+    
+    label: string = "";
+    description?: string | undefined;
+    detail?: string | undefined;
+    picked?: boolean | undefined;
+    alwaysShow?: boolean | undefined;
 
     id!: Number;
     name!: string;
@@ -9,11 +15,15 @@ export default class project {
     order!: Number;
     comment_count!: Number;
     shared!: Boolean;
+    favorite!: Boolean;
     inbox_project!: Boolean;
     team_inbox!: Boolean;
 
     public static deserialize(json: any) : project {
         //TODO : Validate before returning
-        return Object.assign(new project(), json);        
+        let proj : project = Object.assign(new project(), json);      
+        proj.label = proj.favorite ? '⭐ ' + proj.name : proj.name ;
+        proj.alwaysShow = true;
+        return proj;
     }
 }

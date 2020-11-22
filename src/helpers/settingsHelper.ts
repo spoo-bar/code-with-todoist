@@ -50,4 +50,15 @@ export default class settingsHelper {
         return;
     }
 
+    public static setWorkspaceProject(context: vscode.Memento, workspaceName: string, projectId: Number) : void {
+        context.update(workspaceName, projectId);
+    }
+
+    public static getWorkspaceProject(context: vscode.Memento, workspaceName: string) : number {
+        let projectId = context.get<string>(workspaceName);
+        if(projectId) {
+            return parseInt(projectId);
+        }
+        return 0;
+    } 
 }

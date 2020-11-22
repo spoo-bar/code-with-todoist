@@ -19,7 +19,8 @@
 	],
 	"preview": false,
 	"activationEvents": [
-		"onView:projects"
+		"onView:projects",
+		"onView:workspaceProject"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -38,6 +39,14 @@
 				"icon": {
 					"light": "media/light_check.svg",
 					"dark": "media/dark_check.svg"
+				}
+			},
+			{
+				"command": "todoist.attachproject",
+				"title": "Attach Project",
+				"icon": {
+					"light": "media/light_attach.svg",
+					"dark": "media/dark_attach.svg"
 				}
 			}
 		],
@@ -82,6 +91,11 @@
 					"command": "todoist.sync",
 					"when": "view == projects",
 					"group": "navigation"
+				},
+				{
+					"command": "todoist.attachproject",
+					"when": "view == workspaceProject",
+					"group": "navigation"
 				}
 			],
 			"view/item/context": [
@@ -113,6 +127,12 @@
 					"name": "Todos",
 					"when": "workspaceOpen"
 				}
+			],
+			"explorer": [
+				{
+					"id": "workspaceProject",
+					"name": "Workspace Project"
+				}
 			]
 		},
 		"viewsContainers": {
@@ -136,6 +156,10 @@
 			{
 				"view": "today",
 				"contents": "No tasks for today. 🎉"
+			},
+			{
+				"view": "workspaceProject",
+				"contents": "This workspace is not associated with any Todoist Project. \n [Attach Project](command:todoist.attachproject)"
 			}
 		]
 	},
