@@ -4,6 +4,11 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.5.1] - 2020-01-20
+
+### Added
+* Support for older vscode version. Now supports 1.44 onwards
+
 ## [0.5.0] - 2020-11-22
 
 ### Added
