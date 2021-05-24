@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { todoist } from '../models/todoist';
+import { sortBy } from './sortBy';
 
 const todoistAPIToken = "todoistAPIToken";
 const todoistData = "todoist";
@@ -22,6 +23,11 @@ export default class settingsHelper {
 
     public static getSyncInterval(): number {
         return vscode.workspace.getConfiguration().get<number>("code.todoist.syncInternval") ?? 600000;
+    }
+
+    public static getTaskSortBy(): sortBy {
+        const value = vscode.workspace.getConfiguration().get<string>("code.todoist.sortBy");
+        return value as sortBy;
     }
 
     public static getTodoistData(context: vscode.Memento): todoist {
