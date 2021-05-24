@@ -4,6 +4,13 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+
+### Added
+* [#19](https://github.com/spoon611/code-with-todoist/issues/19) - Added a setting `code.todoist.sortBy` to be able to choose how the Todoist tasks should be sorted in the task views. The two options are to
+    1. Retain Todoist task ordering
+    2. Sort based on task priority
+
 ## [0.5.1] - 2020-01-20
 
 ### Added

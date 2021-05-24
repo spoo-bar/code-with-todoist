@@ -6,6 +6,7 @@ import { todoistTreeView } from '../models/todoistTreeView';
 import settingsHelper from '../helpers/settingsHelper';
 import path = require('path');
 import section from '../models/section';
+import { sortBy } from '../helpers/sortBy';
 
 export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView> {
 
@@ -16,8 +17,8 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
     onDidChangeTreeData?: vscode.Event<todoistTreeView | null | undefined> | undefined = this._onDidChangeTreeData.event;
 
     refresh(): void {
-		this._onDidChangeTreeData.fire();
-	}
+        this._onDidChangeTreeData.fire();
+    }
 
     constructor(context: vscode.Memento) {
         this.state = context;
@@ -48,17 +49,17 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
                     treeView.push(...sections);
                 }
                 if (data.tasks && data.tasks.length > 0) {
-                    let tasks :task[] = [];
-                    
-                    if(element.project) {
+                    let tasks: task[] = [];
+
+                    if (element.project) {
                         tasks = (data.tasks.filter(
                             t => t.project_id.toString() === element.id && t.section_id.toString() === "0" && !t.parent));
                     }
-                    if(element.section) {
+                    if (element.section) {
                         tasks = (data.tasks.filter(
                             t => (t.section_id.toString() === element.id && !t.parent)));
                     }
-                    if(element.task) {
+                    if (element.task) {
                         tasks = (data.tasks.filter(
                             t => t.parent?.toString() === element.id));
                     }
@@ -90,7 +91,7 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
 
 function formatTasks(tasks: task[]) {
     let activeTasks: todoistTreeView[] = [];
-    tasks = tasks.sort((a, b) => a.order > b.order ? 1 : -1);
+    tasks = sortTasks();
     tasks.forEach(t => {
         let treeview = new todoistTreeView(t.content);
         treeview.id = t.id.toString();
@@ -109,6 +110,16 @@ function formatTasks(tasks: task[]) {
         activeTasks.push(treeview);
     });
     return activeTasks;
+
+    function sortTasks(): task[] {
+        const sortByValue = settingsHelper.getTaskSortBy();
+        switch (sortByValue) {
+            case sortBy.Order:
+                return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
+            case sortBy.Priority:
+                return tasks.sort((a, b) => a.priority > b.priority ? -1 : 1);
+        }        
+    }
 }
 
 function formatSections(sections: section[]) {
@@ -143,7 +154,7 @@ function formatProjects(projects: project[]) {
     return displayProjects;
 
     function getIconPath(p: project): string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri; } | vscode.ThemeIcon | undefined {
-        if(p.shared) {
+        if (p.shared) {
             return path.join(__filename, '..', '..', '..', 'media', 'shared', p.color.toString() + '.svg');
         }
         return path.join(__filename, '..', '..', '..', 'media', 'colours', p.color.toString() + '.svg');

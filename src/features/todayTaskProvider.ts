@@ -3,6 +3,7 @@ import task, { DueDate } from '../models/task';
 import { todoistTreeView } from '../models/todoistTreeView';
 import settingsHelper from '../helpers/settingsHelper';
 import path = require('path');
+import { sortBy } from '../helpers/sortBy';
 
 export class todayTaskProvider implements vscode.TreeDataProvider<todoistTreeView> {
 
@@ -51,7 +52,7 @@ function isToday(date: DueDate) : boolean {
 
 function formatTasks(tasks: task[]) {
     let activeTasks: todoistTreeView[] = [];
-    tasks = tasks.sort((a, b) => a.priority < b.priority ? 1 : -1);
+    tasks = sortTasks();
     tasks.forEach(t => {
         let treeview = new todoistTreeView(t.content);
         treeview.id = t.id.toString();
@@ -70,4 +71,14 @@ function formatTasks(tasks: task[]) {
         activeTasks.push(treeview);
     });
     return activeTasks;
+
+    function sortTasks(): task[] {
+        const sortByValue = settingsHelper.getTaskSortBy();
+        switch (sortByValue) {
+            case sortBy.Order:
+                return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
+            case sortBy.Priority:
+                return tasks.sort((a, b) => a.priority > b.priority ? -1 : 1);
+        }        
+    }
 }
