@@ -10,6 +10,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * [#19](https://github.com/spoon611/code-with-todoist/issues/19) - Added a setting `code.todoist.sortBy` to be able to choose how the Todoist tasks should be sorted in the task views. The two options are to
     1. Retain Todoist task ordering
     2. Sort based on task priority
+* ----- Added ability to creat new tasls from the extension. task is associated with worksapce project or inbox if not.
 
 ## [0.5.1] - 2020-01-20
 
