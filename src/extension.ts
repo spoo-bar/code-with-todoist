@@ -102,6 +102,33 @@ export function activate(context: vscode.ExtensionContext) {
 	// 	});
 	// }));
 
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.createTask', () => {
+		if (vscode.workspace.name) {
+			let workspaceProjectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
+			let projectName = "Inbox";
+			if (workspaceProjectId != 0) {
+				let projects = settingsHelper.getTodoistData(context.globalState).projects;
+				projectName = projects.filter(p => p.id == workspaceProjectId)[0].name; 
+		}
+			vscode.window.showInputBox({
+				prompt: "Creating task under project : " + projectName,
+
+			}).then(taskName => {
+				if(taskName) {
+					vscode.window.showInformationMessage('Task : "' + taskName + '" is being created under ' + projectName + '.');
+					const state = context.globalState;
+					const apiHelper = new todoistAPIHelper(state);
+					apiHelper.createTask(taskName, workspaceProjectId).then(task => {
+						syncTodoist();
+						let projects = settingsHelper.getTodoistData(context.globalState).projects;
+						let project = projects.filter(p => p.id == task.project_id)[0].name; 
+						vscode.window.showInformationMessage('Task : "' + task.content + '" has been created under ' + project + '.');
+					})
+				}
+			})
+		}
+	}))
+
 	// Event Handlers  -------------------------------------------------------------------
 
 	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(function() {

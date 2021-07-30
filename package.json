@@ -48,6 +48,14 @@
 					"light": "media/light_attach.svg",
 					"dark": "media/dark_attach.svg"
 				}
+			},
+			{
+				"command": "todoist.createTask",
+				"title": "Create Task",
+				"icon": {
+					"light": "media/light_add.svg",
+					"dark": "media/dark_add.svg"
+				}
 			}
 		],
 		"configuration": [
