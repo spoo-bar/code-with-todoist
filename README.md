@@ -8,11 +8,15 @@ This extension allows you to track your [Todoist](https://todoist.com/) tasks fr
 
 Before you can use the extension, you have to set up the following configuration under 
 
-File > Preferences > Settings > Code With Todoist
+> File > Preferences > Settings > Code With Todoist
 
 `code.todoist.api` - To access yor Todoist tasks, you will need to add your Todoist API token. You can get your API token [here](https://todoist.com/prefs/integrations)
 
 `code.todoist.showTodaysTasks` - Enabling this shows today's tasks at the top of the extension sidebar view.
+
+`code.todoist.sortBy` - Choose how the Todoist tasks should be sorted in the task views. The two options are to
+1. Retain Todoist task ordering 
+2. Sort based on task priority
 
 `code.todoist.syncInternval` - Value in milliseconds at which interval Todoist data is synced. 
 
@@ -34,6 +38,12 @@ File > Preferences > Settings > Code With Todoist
 ### View Task details and mark it as done
 
 ![Screenshot of individual Todoist task](media/features/task.png "Screenshot of individual Todoist task")
+
+### Create new Task
+
+![Screenshot of new task](media/features/newtask.png "Screenshot of new task")
+
+New Task is associated with the selected worksapce project. If no workspace project is set, it is associated with `Inbox` project.
 
 ### Show today's tasks
 

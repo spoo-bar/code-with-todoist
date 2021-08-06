@@ -6,7 +6,7 @@
 	"publisher": "Spoorthi",
 	"icon": "media/extension_icon.png",
 	"license": "SEE LICENSE IN LICENSE",
-	"repository": "https://github.com/spoon611/code-with-todoist",
+	"repository": "https://github.com/spoo-bar/code-with-todoist",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
@@ -73,18 +73,18 @@
 						"description": "Show today's tasks at the top of the sidebar",
 						"scope": "application"
 					},
-					"code.todoist.syncInternval": {
-						"type": "number",
-						"default": 600000,
-						"description": "Value in milliseconds at which interval Todoist data is synced.",
-						"scope": "application"
-					},
 					"code.todoist.sortBy": { 
 						"type": "string",
 						"enum": [ "Order", "Priority" ],
 						"default": "Order",
 						"enumDescriptions": ["Orders tasks by their Todoist task order", "Sort tasks by priority. Highest -> Lowest"],
 						"description": "Condition to sort the displayed tasks by.",
+						"scope": "application"
+					},
+					"code.todoist.syncInternval": {
+						"type": "number",
+						"default": 600000,
+						"description": "Value in milliseconds at which interval Todoist data is synced.",
 						"scope": "application"
 					}
 				}
