@@ -98,6 +98,11 @@
 					"group": "navigation"
 				},
 				{
+					"command": "todoist.createTask",
+					"when": "view == workspaceProject || view == workspaceProjectExt",
+					"group": "navigation"
+				},
+				{
 					"command": "todoist.sync",
 					"when": "view == projects",
 					"group": "navigation"
