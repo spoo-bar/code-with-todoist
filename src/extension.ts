@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const taskTreeViewProvider = new taskProvider(context);
 	const todoViewProvider = new todosProvider();
 	const todayTaskViewProvider = new todayTaskProvider(context.globalState);
-	let workspaceProjectTreeViewProvider : workspaceProjectProvider;
+	let workspaceProjectTreeViewProvider: workspaceProjectProvider;
 
 	if (!apiToken) {
 		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 		initTreeView();
 	}
 
-	if(settingsHelper.showTodaysTasks()) {
+	if (settingsHelper.showTodaysTasks()) {
 		vscode.commands.executeCommand('setContext', 'showTodaysTasks', true);
 	}
 
@@ -60,15 +60,15 @@ export function activate(context: vscode.ExtensionContext) {
 		closeSelectedTask(task);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('todoist.openCustomTask', (filePath : vscode.Uri, line : number, column : number) => {
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.openCustomTask', (filePath: vscode.Uri, line: number, column: number) => {
 		openCustomTask(filePath, line, column);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.attachproject', () => {
-		if(vscode.workspace.name) {
+		if (vscode.workspace.name) {
 			let workspaceName = vscode.workspace.name;
 			var projectId = settingsHelper.getWorkspaceProject(context.globalState, workspaceName);
-			if(projectId == 0) {
+			if (projectId == 0) {
 				attachworkspaceProject();
 			}
 			else {
@@ -103,36 +103,57 @@ export function activate(context: vscode.ExtensionContext) {
 	// }));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.createTask', () => {
+		let projectName = "Inbox";
+		let workspaceProjectId = 0;
 		if (vscode.workspace.name) {
-			let workspaceProjectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
-			let projectName = "Inbox";
+			workspaceProjectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
 			if (workspaceProjectId != 0) {
 				let projects = settingsHelper.getTodoistData(context.globalState).projects;
-				projectName = projects.filter(p => p.id == workspaceProjectId)[0].name; 
+				projectName = projects.filter(p => p.id == workspaceProjectId)[0].name;
+			}
 		}
-			vscode.window.showInputBox({
-				prompt: "Creating task under project : " + projectName,
 
-			}).then(taskName => {
-				if(taskName) {
-					vscode.window.showInformationMessage('Task : "' + taskName + '" is being created under ' + projectName + '.');
-					const state = context.globalState;
-					const apiHelper = new todoistAPIHelper(state);
-					apiHelper.createTask(taskName, workspaceProjectId).then(task => {
-						syncTodoist();
-						let projects = settingsHelper.getTodoistData(context.globalState).projects;
-						let project = projects.filter(p => p.id == task.project_id)[0].name; 
-						vscode.window.showInformationMessage('Task : "' + task.content + '" has been created under ' + project + '.');
-					})
-				}
-			})
-		}
+		vscode.window.showInputBox({
+			prompt: "Creating task under project : " + projectName,
+
+		}).then(taskName => {
+			if (taskName) {
+
+				const progressOptions: vscode.ProgressOptions = {
+					location: vscode.ProgressLocation.Notification,
+					title: "Creating task '" + taskName + "' under project : " + projectName,
+					cancellable: false
+				};
+
+				vscode.window.withProgress(progressOptions, (progress, token) => {
+					token.onCancellationRequested(() => { });
+					progress.report({ message: '', increment: 1 });
+		
+					return new Promise(resolve => {
+						const state = context.globalState;
+						const apiHelper = new todoistAPIHelper(state);
+						progress.report({ message: '', increment: 50 });
+
+						apiHelper.createTask(taskName, workspaceProjectId).then(task => {
+							progress.report({ message: '', increment: 50 });
+							syncTodoist();
+							resolve(undefined);
+						}).catch((err) => {
+							vscode.window.showErrorMessage(err);
+							
+						});
+					});
+		
+				});
+
+			}
+		})
 	}))
 
 	// Event Handlers  -------------------------------------------------------------------
 
-	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(function() {
-		if(vscode.workspace.name) {
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(function () {
+		if (vscode.workspace.name) {
 			vscode.commands.executeCommand('setContext', 'workspaceOpen', true);
 		}
 		else {
@@ -182,7 +203,7 @@ export function activate(context: vscode.ExtensionContext) {
 	function initTreeView() {
 		settingsHelper.setSelectedTask(context.workspaceState, 0);
 		let lastSyncTime = new Date(settingsHelper.getTodoistData(context.globalState).lastSyncTime).getTime();
-		if(isNaN(lastSyncTime)) {
+		if (isNaN(lastSyncTime)) {
 			lastSyncTime = new Date(0, 0, 0).getTime();
 		}
 		const currentTime = new Date().getTime();
@@ -194,7 +215,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
 		vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
 		vscode.window.registerTreeDataProvider('todos', todoViewProvider);
-		
+
 		showWorkspaceProjects();
 	}
 
@@ -260,9 +281,9 @@ export function activate(context: vscode.ExtensionContext) {
 		let workspaceName = vscode.workspace.name;
 		let projects = settingsHelper.getTodoistData(context.globalState).projects;
 		vscode.window.showQuickPick(projects, {
-			canPickMany: false,			
+			canPickMany: false,
 		}).then(selectedProject => {
-			if(selectedProject) {
+			if (selectedProject) {
 				settingsHelper.setWorkspaceProject(context.globalState, workspaceName!, selectedProject.id);
 				showWorkspaceProjects();
 				workspaceProjectTreeViewProvider.refresh();
@@ -274,4 +295,4 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {
 	clearInterval(syncInterval);
- }
+}
