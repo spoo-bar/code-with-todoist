@@ -27,7 +27,7 @@
 		"commands": [
 			{
 				"command": "todoist.sync",
-				"title": "Sync Todoist",
+				"title": "Todoist : Sync Todoist",
 				"icon": {
 					"light": "media/light_refresh.svg",
 					"dark": "media/dark_refresh.svg"
@@ -35,7 +35,7 @@
 			},
 			{
 				"command": "todoist.closeTask",
-				"title": "Mark task as done",
+				"title": "Todoist : Mark task as done",
 				"icon": {
 					"light": "media/light_check.svg",
 					"dark": "media/dark_check.svg"
@@ -43,7 +43,7 @@
 			},
 			{
 				"command": "todoist.attachproject",
-				"title": "Attach Project",
+				"title": "Todoist : Attach Project",
 				"icon": {
 					"light": "media/light_attach.svg",
 					"dark": "media/dark_attach.svg"
@@ -51,7 +51,7 @@
 			},
 			{
 				"command": "todoist.createTask",
-				"title": "Create Task",
+				"title": "Todoist : Create Task",
 				"icon": {
 					"light": "media/light_add.svg",
 					"dark": "media/dark_add.svg"

@@ -9,6 +9,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Added
 * Added Alphabetical sort option to `code.todoist.sortBy`. Not sure if anyone wants it, but here it is.
 
+### Changed
+* Added `Todoist` text to command titles to make it more obvious when accessed from Command Palette. 
+
 ## [0.5.2] - 2021-08-06
 
 ### Added
