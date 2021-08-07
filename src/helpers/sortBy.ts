@@ -1,4 +1,6 @@
 export enum sortBy {
     Order = "Order",
-    Priority = "Priority"
+    Priority = "Priority",
+    Alphabetical = "Alphabetical"
+
 }

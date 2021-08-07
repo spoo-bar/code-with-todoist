@@ -75,9 +75,9 @@
 					},
 					"code.todoist.sortBy": { 
 						"type": "string",
-						"enum": [ "Order", "Priority" ],
+						"enum": [ "Order", "Priority", "Alphabetical" ],
 						"default": "Order",
-						"enumDescriptions": ["Orders tasks by their Todoist task order", "Sort tasks by priority. Highest -> Lowest"],
+						"enumDescriptions": ["Orders tasks by their Todoist task order", "Sort tasks by priority. Highest -> Lowest", "Sorts by alphabetical order of tasks"],
 						"description": "Condition to sort the displayed tasks by.",
 						"scope": "application"
 					},

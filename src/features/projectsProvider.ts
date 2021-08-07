@@ -118,6 +118,8 @@ function formatTasks(tasks: task[]) {
                 return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
             case sortBy.Priority:
                 return tasks.sort((a, b) => a.priority > b.priority ? -1 : 1);
+            case sortBy.Alphabetical:
+                return tasks.sort((a, b) => a.content > b.content ? 1 : -1);
         }        
     }
 }

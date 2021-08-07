@@ -4,7 +4,12 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.5.2]
+## [Unreleased]
+
+### Added
+* Added Alphabetical sort option to `code.todoist.sortBy`. Not sure if anyone wants it, but here it is.
+
+## [0.5.2] - 2021-08-06
 
 ### Added
 * [#19](https://github.com/spoon611/code-with-todoist/issues/19) - Added a setting `code.todoist.sortBy` to be able to choose how the Todoist tasks should be sorted in the task views. The two options are to
@@ -12,7 +17,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
     2. Sort based on task priority
 * [#23](https://github.com/spoon611/code-with-todoist/issues/23) - Added ability to create new tasks from the extension. Task is associated with the selected worksapce project or inbox if not.
 
-## [0.5.1] - 2020-01-20
+## [0.5.1] - 2021-01-20
 
 ### Added
 * Support for older vscode version. Now supports 1.44 onwards
