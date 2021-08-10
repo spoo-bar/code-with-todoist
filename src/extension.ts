@@ -57,7 +57,12 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', (task: task) => {
-		closeSelectedTask(task);
+		if(task) {
+			closeSelectedTask(task);
+		}
+		else {
+			vscode.window.showErrorMessage("No task was selected. Select a task from the sidebar.")
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.openCustomTask', (filePath: vscode.Uri, line: number, column: number) => {

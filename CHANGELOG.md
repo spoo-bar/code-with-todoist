@@ -12,6 +12,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Changed
 * Added `Todoist` text to command titles to make it more obvious when accessed from Command Palette. 
 
+### Fixed
+* Incorrect error on no task being selected and running `Mark task as done` from Command Palette.
+
 ## [0.5.2] - 2021-08-06
 
 ### Added
