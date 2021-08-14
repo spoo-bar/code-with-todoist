@@ -11,6 +11,7 @@ export default class project implements vscode.QuickPickItem {
     id!: Number;
     name!: string;
     color!: Number;
+    parent_id!: Number;
     parent!: Number;
     order!: Number;
     comment_count!: Number;
@@ -18,6 +19,8 @@ export default class project implements vscode.QuickPickItem {
     favorite!: Boolean;
     inbox_project!: Boolean;
     team_inbox!: Boolean;
+    sync_id!: Number;
+    url!: Url;
 
     public static deserialize(json: any) : project {
         //TODO : Validate before returning
