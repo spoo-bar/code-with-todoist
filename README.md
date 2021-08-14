@@ -10,7 +10,9 @@ Before you can use the extension, you have to set up the following configuration
 
 > File > Preferences > Settings > Code With Todoist
 
-`code.todoist.api` - To access yor Todoist tasks, you will need to add your Todoist API token. You can get your API token [here](https://todoist.com/prefs/integrations)
+`code.todoist.api` - To access your Todoist tasks, you will need to add your Todoist API token. You can get your API token [here](https://todoist.com/prefs/integrations)
+
+`code.todoist.showTaskNotifications` - Enabling this shows notifications for tasks which have a due time.
 
 `code.todoist.showTodaysTasks` - Enabling this shows today's tasks at the top of the extension sidebar view.
 
@@ -19,6 +21,7 @@ Before you can use the extension, you have to set up the following configuration
 2. Sort based on task priority
 
 `code.todoist.syncInternval` - Value in milliseconds at which interval Todoist data is synced. 
+
 
 ## Features
 
@@ -38,6 +41,10 @@ Before you can use the extension, you have to set up the following configuration
 ### View Task details and mark it as done
 
 ![Screenshot of individual Todoist task](media/features/task.png "Screenshot of individual Todoist task")
+
+### Get Task Due Notifications when setting is enabled
+
+![Screenshot of task due notification](media/features/notification.png "Screenshot of task due notification")
 
 ### Create new Task
 

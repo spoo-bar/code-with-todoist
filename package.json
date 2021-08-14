@@ -67,6 +67,12 @@
 						"description": "Todoist Integrations API token",
 						"scope": "application"
 					},
+					"code.todoist.showTaskNotifications": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show notification for tasks which has time set",
+						"scope": "application"
+					},
 					"code.todoist.showTodaysTasks": {
 						"type": "boolean",
 						"default": true,

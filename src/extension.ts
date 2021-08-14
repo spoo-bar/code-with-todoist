@@ -10,8 +10,10 @@ import { todosProvider } from './features/todosProvider';
 import { todayTaskProvider } from './features/todayTaskProvider';
 import { workspaceProjectProvider } from './features/workspaceProjectProvider';
 import { todoist } from './models/todoist';
+import notificationHelper from './helpers/notificationHelper';
 
 let syncInterval!: NodeJS.Timeout;
+let taskNotifications!: NodeJS.Timeout[];
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -36,6 +38,11 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'showTodaysTasks', true);
 	}
 
+	if (settingsHelper.showTaskNotifications()) {
+		taskNotifications = notificationHelper.setupTaskNotifications(context.globalState);
+	}
+
+
 	// if(vscode.workspace.name) {
 	// 	vscode.commands.executeCommand('setContext', 'workspaceOpen', true);		
 	// }
@@ -57,7 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', (task: task) => {
-		if(task) {
+		if (task) {
 			closeSelectedTask(task);
 		}
 		else {
@@ -133,7 +140,7 @@ export function activate(context: vscode.ExtensionContext) {
 				vscode.window.withProgress(progressOptions, (progress, token) => {
 					token.onCancellationRequested(() => { });
 					progress.report({ message: '', increment: 1 });
-		
+
 					return new Promise(resolve => {
 						const state = context.globalState;
 						const apiHelper = new todoistAPIHelper(state);
@@ -145,10 +152,10 @@ export function activate(context: vscode.ExtensionContext) {
 							resolve(undefined);
 						}).catch((err) => {
 							vscode.window.showErrorMessage(err);
-							
+
 						});
 					});
-		
+
 				});
 
 			}
@@ -264,6 +271,9 @@ export function activate(context: vscode.ExtensionContext) {
 							todayTaskTreeViewProvider.refresh();
 							projectsTreeViewProvider.refresh();
 							workspaceProjectTreeViewProvider.refresh();
+							if (settingsHelper.showTaskNotifications()) {
+								taskNotifications = notificationHelper.setupTaskNotifications(context.globalState);
+							}
 							resolve();
 						}).catch(error => {
 							vscode.window.showErrorMessage("Todoist Sync failed. " + error);
@@ -300,4 +310,8 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {
 	clearInterval(syncInterval);
+
+	for (let taskNotification of taskNotifications) {
+		clearInterval(taskNotification);
+	}
 }

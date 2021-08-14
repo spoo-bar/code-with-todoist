@@ -21,6 +21,10 @@ export default class settingsHelper {
         return vscode.workspace.getConfiguration().get<boolean>("code.todoist.showTodaysTasks");
     }
 
+    public static showTaskNotifications(): boolean | undefined {
+        return vscode.workspace.getConfiguration().get<boolean>("code.todoist.showTaskNotifications");
+    }
+
     public static getSyncInterval(): number {
         return vscode.workspace.getConfiguration().get<number>("code.todoist.syncInternval") ?? 600000;
     }

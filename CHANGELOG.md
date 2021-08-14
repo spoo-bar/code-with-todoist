@@ -8,6 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 * Added Alphabetical sort option to `code.todoist.sortBy`. Not sure if anyone wants it, but here it is.
+* With `code.todoist.showTaskNotifications` enabled, get notifications within vscode for tasks for which time is set.
 
 ### Changed
 * Added `Todoist` text to command titles to make it more obvious when accessed from Command Palette. 
