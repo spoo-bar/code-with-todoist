@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { Url } from 'url';
 
 export default class project implements vscode.QuickPickItem {
     
@@ -12,7 +13,6 @@ export default class project implements vscode.QuickPickItem {
     name!: string;
     color!: Number;
     parent_id!: Number;
-    parent!: Number;
     order!: Number;
     comment_count!: Number;
     shared!: Boolean;

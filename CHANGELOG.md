@@ -15,6 +15,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 * Incorrect error on no task being selected and running `Mark task as done` from Command Palette.
+* [#25](https://github.com/spoon611/code-with-todoist/issues/25) - Removed task and project properties which were marked deprecated by todoist
 
 ## [0.5.2] - 2021-08-06
 

@@ -37,7 +37,7 @@ export class taskProvider implements vscode.TreeDataProvider<todoistTreeView> {
                     let taskTitle = new todoistTreeView(task.content);
                     taskTitle.collapsibleState = vscode.TreeItemCollapsibleState.None;
                     taskTitle.id = task.id.toString() + '_task';
-                    //taskTitle.description = task.content;
+                    taskTitle.description = task.description;
                     taskTitle.tooltip = task.content;
                     treeView.push(taskTitle);
 
@@ -51,7 +51,7 @@ export class taskProvider implements vscode.TreeDataProvider<todoistTreeView> {
                         treeView.push(taskProject);
                     }
 
-                    const parent = data.tasks.filter(p => p.id === task.parent);
+                    const parent = data.tasks.filter(p => p.id === task.parent_id);
                     if (parent.length > 0) {
                         let taskParent = new todoistTreeView("Parent");
                         taskParent.collapsibleState = vscode.TreeItemCollapsibleState.None;

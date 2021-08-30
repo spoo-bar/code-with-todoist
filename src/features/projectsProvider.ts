@@ -27,7 +27,7 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
 
     getTreeItem(element: todoistTreeView): vscode.TreeItem | Thenable<vscode.TreeItem> {
         const data = settingsHelper.getTodoistData(this.state);
-        if (data.tasks.some(task => task.parent?.toString() == element.id)) {
+        if (data.tasks.some(task => task.parent_id?.toString() == element.id)) {
             element.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
         }
         return element;
@@ -41,7 +41,7 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
             return Promise.resolve(new Promise(function (resolve, reject) {
                 let treeView: todoistTreeView[] = [];
                 if (data.projects && data.projects.length > 0) {
-                    let projects = formatProjects(data.projects.filter(p => p.parent && p.parent == parseInt(element.id!)));
+                    let projects = formatProjects(data.projects.filter(p => p.parent_id && p.parent_id == parseInt(element.id!)));
                     treeView.push(...projects);
                 }
                 if (data.sections && data.sections.length > 0) {
@@ -53,15 +53,15 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
 
                     if (element.project) {
                         tasks = (data.tasks.filter(
-                            t => t.project_id.toString() === element.id && t.section_id.toString() === "0" && !t.parent));
+                            t => t.project_id.toString() === element.id && t.section_id.toString() === "0" && !t.parent_id));
                     }
                     if (element.section) {
                         tasks = (data.tasks.filter(
-                            t => (t.section_id.toString() === element.id && !t.parent)));
+                            t => (t.section_id.toString() === element.id && !t.parent_id)));
                     }
                     if (element.task) {
                         tasks = (data.tasks.filter(
-                            t => t.parent?.toString() === element.id));
+                            t => t.parent_id?.toString() === element.id));
                     }
                     treeView.push(...formatTasks(tasks));
                     resolve(treeView);
@@ -77,11 +77,11 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
         else {
             return Promise.resolve(new Promise(function (resolve, reject) {
                 if (data.projects && data.projects.length > 0) {
-                    resolve(formatProjects(data.projects.filter(p => !p.parent)));
+                    resolve(formatProjects(data.projects.filter(p => !p.parent_id)));
                 }
                 else {
                     api.getProjects().then((projects: project[]) => {
-                        resolve(formatProjects(projects.filter(p => !p.parent)));
+                        resolve(formatProjects(projects.filter(p => !p.parent_id)));
                     });
                 }
             }));

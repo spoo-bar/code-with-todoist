@@ -10,7 +10,6 @@ export default class task {
     completed!: Boolean;
     label_ids!: Number[];
     parent_id!: Number;
-    parent!: Number;
     order!: Number;
     priority!: Number;
     due!: DueDate;
