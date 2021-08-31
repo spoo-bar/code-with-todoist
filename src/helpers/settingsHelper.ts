@@ -10,7 +10,7 @@ export default class settingsHelper {
 
 
     public static getTodoistAPIToken(): string | undefined {
-        return vscode.workspace.getConfiguration().get<string>("code.todoist.api");
+        return vscode.workspace.getConfiguration().get<string>("apiToken");
     }
 
     public static useGitIgnore(): boolean | undefined {
@@ -18,19 +18,19 @@ export default class settingsHelper {
     }
 
     public static showTodaysTasks(): boolean | undefined {
-        return vscode.workspace.getConfiguration().get<boolean>("code.todoist.showTodaysTasks");
+        return vscode.workspace.getConfiguration().get<boolean>("showTodaysTasks");
     }
 
     public static showTaskNotifications(): boolean | undefined {
-        return vscode.workspace.getConfiguration().get<boolean>("code.todoist.showTaskNotifications");
+        return vscode.workspace.getConfiguration().get<boolean>("showTaskNotifications");
     }
 
     public static getSyncInterval(): number {
-        return vscode.workspace.getConfiguration().get<number>("code.todoist.syncInternval") ?? 600000;
+        return vscode.workspace.getConfiguration().get<number>("syncInternval") ?? 600000;
     }
 
     public static getTaskSortBy(): sortBy {
-        const value = vscode.workspace.getConfiguration().get<string>("code.todoist.sortBy");
+        const value = vscode.workspace.getConfiguration().get<string>("sortBy");
         return value as sortBy;
     }
 

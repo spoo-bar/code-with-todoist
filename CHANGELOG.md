@@ -12,6 +12,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Changed
 * Added `Todoist` text to command titles to make it more obvious when accessed from Command Palette. 
+* Changed the identifiers for the extention settings. **Prior settings are not carried over and need to be reset**
 
 ### Fixed
 * Incorrect error on no task being selected and running `Mark task as done` from Command Palette.

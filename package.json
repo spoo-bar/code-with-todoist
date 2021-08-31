@@ -62,24 +62,24 @@
 			{
 				"title": "Code With Todoist",
 				"properties": {
-					"code.todoist.api": {
+					"apiToken": {
 						"type": "string",
-						"description": "Todoist Integrations API token",
+						"markdownDescription": "Todoist Integrations API token. Available [here](https://todoist.com/prefs/integrations)",
 						"scope": "application"
 					},
-					"code.todoist.showTaskNotifications": {
+					"showTaskNotifications": {
 						"type": "boolean",
 						"default": true,
 						"description": "Show notification for tasks which has time set",
 						"scope": "application"
 					},
-					"code.todoist.showTodaysTasks": {
+					"showTodaysTasks": {
 						"type": "boolean",
 						"default": true,
 						"description": "Show today's tasks at the top of the sidebar",
 						"scope": "application"
 					},
-					"code.todoist.sortBy": { 
+					"sortBy": { 
 						"type": "string",
 						"enum": [ "Order", "Priority", "Alphabetical" ],
 						"default": "Order",
@@ -87,7 +87,7 @@
 						"description": "Condition to sort the displayed tasks by.",
 						"scope": "application"
 					},
-					"code.todoist.syncInternval": {
+					"syncInternval": {
 						"type": "number",
 						"default": 600000,
 						"description": "Value in milliseconds at which interval Todoist data is synced.",
