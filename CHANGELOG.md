@@ -4,7 +4,7 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.0.0] - 2021-09-21
 
 ### Added
 * Added Alphabetical sort option to `code.todoist.sortBy`. Not sure if anyone wants it, but here it is.
