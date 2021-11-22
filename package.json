@@ -67,6 +67,18 @@
 						"markdownDescription": "Todoist Integrations API token. Available [here](https://todoist.com/prefs/integrations)",
 						"scope": "application"
 					},
+					"identifyTodos.display": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show TODO comments from the workspace",
+						"scope": "application"
+					},
+					"identifyTodos.regex": {
+						"type": "string",
+						"default": "(//.?((todo)|(fixme)).*)",
+						"description": "Identify the TODO comments in the project using the RegEx",
+						"scope": "application"
+					},
 					"showTaskNotifications": {
 						"type": "boolean",
 						"default": true,

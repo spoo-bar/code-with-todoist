@@ -34,6 +34,14 @@ export default class settingsHelper {
         return value as sortBy;
     }
 
+    public static showWorkspaceTodos(): boolean | undefined {
+        return vscode.workspace.getConfiguration().get<boolean>("identifyTodos.display");
+    }
+
+    public static getTodosRegEx(): string | undefined {
+        return vscode.workspace.getConfiguration().get<string>("identifyTodos.regex");
+    }
+
     public static getTodoistData(context: vscode.Memento): todoist {
         const data = context.get<string>(todoistData);
         if (data) {
