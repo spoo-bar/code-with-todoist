@@ -22,9 +22,9 @@ export function activate(context: vscode.ExtensionContext) {
 	const apiToken = settingsHelper.getTodoistAPIToken();
 	const projectsTreeViewProvider = new projectsProvider(context.globalState);
 	const taskTreeViewProvider = new taskProvider(context);
-	const todoViewProvider = new todosProvider();
 	const todayTaskViewProvider = new todayTaskProvider(context.globalState);
 	let workspaceProjectTreeViewProvider: workspaceProjectProvider;
+	let todoViewProvider: todosProvider;
 
 	if (!apiToken) {
 		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
@@ -42,10 +42,20 @@ export function activate(context: vscode.ExtensionContext) {
 		taskNotifications = notificationHelper.setupTaskNotifications(context.globalState);
 	}
 
-
-	// if(vscode.workspace.name) {
-	// 	vscode.commands.executeCommand('setContext', 'workspaceOpen', true);		
-	// }
+	if (settingsHelper.showWorkspaceTodos()) {
+		var regex = settingsHelper.getTodosRegEx();
+		if (!regex) {
+			vscode.window.showErrorMessage("RegEx value to identify Todos in the project is not set. Set it under File > Preferences > Settings > Code With Todoist");
+		}
+		else {
+			if (vscode.workspace.name) {
+				let projectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
+				todoViewProvider = new todosProvider(context.globalState, projectId);
+				vscode.window.registerTreeDataProvider('todos', todoViewProvider);
+			}
+			
+		}
+	}
 
 	// Commands -------------------------------------------------------------------------
 
@@ -226,7 +236,6 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerTreeDataProvider('today', todayTaskViewProvider);
 		vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
 		vscode.window.registerTreeDataProvider('task', taskTreeViewProvider);
-		vscode.window.registerTreeDataProvider('todos', todoViewProvider);
 
 		showWorkspaceProjects();
 	}
@@ -255,7 +264,7 @@ export function activate(context: vscode.ExtensionContext) {
 			token.onCancellationRequested(() => { });
 			progress.report({ message: ' : Projects', increment: 1 });
 
-			return new Promise(resolve => {
+			return new Promise<void>(resolve => {
 				apiHelper.syncProjects().then(() => {
 					progress.report({ message: ' : Sections', increment: 33 });
 					apiHelper.syncActiveTasks().then(() => {
