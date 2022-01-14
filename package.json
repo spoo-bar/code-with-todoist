@@ -65,33 +65,17 @@
 					"apiToken": {
 						"type": "string",
 						"markdownDescription": "Todoist Integrations API token. Available [here](https://todoist.com/prefs/integrations)",
-						"scope": "application"
+						"scope": "application",
+						"order": 0
 					},
-					"identifyTodos.display": {
-						"type": "boolean",
-						"default": true,
-						"description": "Show TODO comments from the workspace",
-						"scope": "application"
-					},
-					"identifyTodos.regex": {
-						"type": "string",
-						"default": "(//.?((todo)|(fixme)).*)",
-						"description": "Identify the TODO comments in the project using the RegEx",
-						"scope": "application"
-					},
-					"showTaskNotifications": {
-						"type": "boolean",
-						"default": true,
-						"description": "Show notification for tasks which has time set",
-						"scope": "application"
-					},
-					"showTodaysTasks": {
-						"type": "boolean",
-						"default": true,
-						"description": "Show today's tasks at the top of the sidebar",
-						"scope": "application"
-					},
-					"sortBy": {
+					"syncInternval": {
+						"type": "number",
+						"default": 600000,
+						"description": "Value in milliseconds at which interval Todoist data is synced.",
+						"scope": "application",
+						"order": 1
+					},					
+					"taskDisplay.sortBy": {
 						"type": "string",
 						"enum": [
 							"Order",
@@ -105,13 +89,52 @@
 							"Sorts by alphabetical order of tasks"
 						],
 						"description": "Condition to sort the displayed tasks by.",
-						"scope": "application"
+						"scope": "application",
+						"order": 2
 					},
-					"syncInternval": {
+					"taskDisplay.showTaskNotifications": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show notification within vscode for tasks which has time set",
+						"scope": "application",
+						"order": 3
+					},
+					"todayView.showTodaysTasks": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show today's tasks at the top of the extension sidebar",
+						"scope": "application",
+						"order": 4
+					},
+					"todayView.showOverdueTasks": {
+						"type": "boolean",
+						"default": true,
+						"markdownDescription": "Show overdue tasks in the today view. Requires `#todayView.showTodaysTasks` to be set to `true`",
+						"scope": "application",
+						"order": 5
+					},
+					"todayView.overdueDaysToDisplay": {
 						"type": "number",
-						"default": 600000,
-						"description": "Value in milliseconds at which interval Todoist data is synced.",
-						"scope": "application"
+						"default": 1,
+						"markdownDescription": "Show overdue tasks for the given number of days. Example: If the value is set to 1, it shows overdue tasks from yesterday. If the value is set to 2, it shows overdue tasks from yesterday and day before. Requires `#todayView.showOverdueTasks` to be set to `true`",
+						"scope": "application",
+						"order": 6,
+						"minimum": 1,
+						"maximum": 7
+					},
+					"identifyTodos.display": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show TODO comments from the workspace",
+						"scope": "application",
+						"deprecationMessage": "Not yet implemented. Feature in development."
+					},
+					"identifyTodos.regex": {
+						"type": "string",
+						"default": "(\/.?((todo)|(fixme)).*)",
+						"description": "Identify the TODO comments in the project using the RegEx",
+						"scope": "application",
+						"deprecationMessage": "Not yet implemented. Feature in development."
 					}
 				}
 			}
