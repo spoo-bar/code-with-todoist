@@ -16,8 +16,8 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
     private _onDidChangeTreeData: vscode.EventEmitter<todoistTreeView | undefined> = new vscode.EventEmitter<todoistTreeView | undefined>();
     onDidChangeTreeData?: vscode.Event<todoistTreeView | null | undefined> | undefined = this._onDidChangeTreeData.event;
 
-    refresh(): void {
-        this._onDidChangeTreeData.fire();
+    refresh(data: todoistTreeView | undefined): void {
+        this._onDidChangeTreeData.fire(data);
     }
 
     constructor(context: vscode.Memento) {

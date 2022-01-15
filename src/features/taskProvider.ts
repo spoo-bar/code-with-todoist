@@ -11,9 +11,9 @@ export class taskProvider implements vscode.TreeDataProvider<todoistTreeView> {
     private _onDidChangeTreeData: vscode.EventEmitter<todoistTreeView | undefined> = new vscode.EventEmitter<todoistTreeView | undefined>();
     onDidChangeTreeData?: vscode.Event<todoistTreeView | null | undefined> | undefined = this._onDidChangeTreeData.event;
 
-    refresh(): void {
+    refresh(data: todoistTreeView | undefined): void {
         this.taskId = settingsHelper.getSelectedTask(this.context.workspaceState);
-        this._onDidChangeTreeData.fire();
+        this._onDidChangeTreeData.fire(data);
     }
 
     constructor(context: vscode.ExtensionContext) {

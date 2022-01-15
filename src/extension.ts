@@ -6,10 +6,8 @@ import { projectsProvider } from './features/projectsProvider';
 import todoistAPIHelper from './helpers/todoistAPIHelper';
 import { taskProvider } from './features/taskProvider';
 import task from './models/task';
-import { todosProvider } from './features/todosProvider';
 import { todayTaskProvider } from './features/todayTaskProvider';
 import { workspaceProjectProvider } from './features/workspaceProjectProvider';
-import { todoist } from './models/todoist';
 import notificationHelper from './helpers/notificationHelper';
 
 let syncInterval!: NodeJS.Timeout;
@@ -24,7 +22,6 @@ export function activate(context: vscode.ExtensionContext) {
 	const taskTreeViewProvider = new taskProvider(context);
 	const todayTaskViewProvider = new todayTaskProvider(context.globalState);
 	let workspaceProjectTreeViewProvider: workspaceProjectProvider;
-	let todoViewProvider: todosProvider;
 
 	if (!apiToken) {
 		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
@@ -42,27 +39,27 @@ export function activate(context: vscode.ExtensionContext) {
 		taskNotifications = notificationHelper.setupTaskNotifications(context.globalState);
 	}
 
-	if (settingsHelper.showWorkspaceTodos()) {
-		var regex = settingsHelper.getTodosRegEx();
-		if (!regex) {
-			vscode.window.showErrorMessage("RegEx value to identify Todos in the project is not set. Set it under File > Preferences > Settings > Code With Todoist");
-		}
-		else {
-			if (vscode.workspace.name) {
-				let projectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
-				todoViewProvider = new todosProvider(context.globalState, projectId);
-				vscode.window.registerTreeDataProvider('todos', todoViewProvider);
-			}
+	// if (settingsHelper.showWorkspaceTodos()) {
+	// 	var regex = settingsHelper.getTodosRegEx();
+	// 	if (!regex) {
+	// 		vscode.window.showErrorMessage("RegEx value to identify Todos in the project is not set. Set it under File > Preferences > Settings > Code With Todoist");
+	// 	}
+	// 	else {
+	// 		if (vscode.workspace.name) {
+	// 			let projectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
+	// 			todoViewProvider = new todosProvider(context.globalState, projectId);
+	// 			vscode.window.registerTreeDataProvider('todos', todoViewProvider);
+	// 		}
 			
-		}
-	}
+	// 	}
+	// }
 
 	// Commands -------------------------------------------------------------------------
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.openTask', (taskId) => {
 		settingsHelper.setSelectedTask(context.workspaceState, parseInt(taskId));
 		vscode.commands.executeCommand('setContext', 'taskSelected', true);
-		taskTreeViewProvider.refresh();
+		taskTreeViewProvider.refresh(undefined);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.sync', () => {
@@ -278,8 +275,8 @@ export function activate(context: vscode.ExtensionContext) {
 							vscode.window.registerTreeDataProvider('today', todayTaskTreeViewProvider);
 							showWorkspaceProjects();
 							todayTaskTreeViewProvider.refresh();
-							projectsTreeViewProvider.refresh();
-							workspaceProjectTreeViewProvider.refresh();
+							projectsTreeViewProvider.refresh(undefined);
+							workspaceProjectTreeViewProvider.refresh(undefined);
 							if (settingsHelper.showTaskNotifications()) {
 								taskNotifications = notificationHelper.setupTaskNotifications(context.globalState);
 							}
@@ -310,7 +307,7 @@ export function activate(context: vscode.ExtensionContext) {
 			if (selectedProject) {
 				settingsHelper.setWorkspaceProject(context.globalState, workspaceName!, selectedProject.id);
 				showWorkspaceProjects();
-				workspaceProjectTreeViewProvider.refresh();
+				workspaceProjectTreeViewProvider.refresh(undefined);
 			}
 		});
 	}

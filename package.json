@@ -210,10 +210,6 @@
 					"id": "task",
 					"name": "Task",
 					"when": "taskSelected"
-				},
-				{
-					"id": "todos",
-					"name": "Todos"
 				}
 			],
 			"explorer": [
@@ -247,10 +243,6 @@
 			},
 			{
 				"view": "workspaceProject",
-				"contents": "This workspace is not associated with any Todoist Project. \n [Attach Project](command:todoist.attachproject)"
-			},
-			{
-				"view": "todos",
 				"contents": "This workspace is not associated with any Todoist Project. \n [Attach Project](command:todoist.attachproject)"
 			}
 		]
