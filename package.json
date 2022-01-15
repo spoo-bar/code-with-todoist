@@ -122,6 +122,27 @@
 						"minimum": 1,
 						"maximum": 7
 					},
+					"todayView.overdueDisplayPrefix": {
+						"type": "string",
+						"enum": [
+							"⏰",
+							"❗",
+							"📅",
+							"🔥",
+							"⏳"
+						],
+						"default": "❗",
+						"enumDescriptions": [
+							"Alarm Clock",
+							"Exclamation Mark",
+							"Calender",
+							"Fire",
+							"Hourglass"
+						],
+						"description": "Overdue tasks will be prefixed with this emoji in the Today view. The number of emojis in the prefix corresponds to the number of days the task is overdue.",
+						"scope": "application",
+						"order": 8
+					},
 					"identifyTodos.display": {
 						"type": "boolean",
 						"default": true,

@@ -39,6 +39,10 @@ export default class settingsHelper {
         return vscode.workspace.getConfiguration().get<number>("todayView.overdueDaysToDisplay") ?? 1;
     }
 
+    public static getOverdueDisplayText(): string {
+        return vscode.workspace.getConfiguration().get<string>("todayView.overdueDisplayPrefix") ?? "❗";
+    }
+
     public static useGitIgnore(): boolean | undefined {
         return vscode.workspace.getConfiguration().get<boolean>("code.todoist.useGitIgnore");
     }
