@@ -95,7 +95,7 @@ function formatTasks(tasks: task[]) {
     tasks.forEach(t => {
         let treeview = new todoistTreeView(t.content);
         treeview.id = t.id.toString();
-        treeview.tooltip = t.content;
+        treeview.tooltip = new vscode.MarkdownString(t.content);
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
         treeview.task = t;
         treeview.iconPath = path.join(__filename, '..', '..', '..', 'media', 'priority', t.priority.toString() + '.svg');

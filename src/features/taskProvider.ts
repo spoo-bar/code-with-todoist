@@ -38,7 +38,7 @@ export class taskProvider implements vscode.TreeDataProvider<todoistTreeView> {
                     taskTitle.collapsibleState = vscode.TreeItemCollapsibleState.None;
                     taskTitle.id = task.id.toString() + '_task';
                     taskTitle.description = task.description;
-                    taskTitle.tooltip = task.content;
+                    taskTitle.tooltip = new vscode.MarkdownString(task.content);
                     treeView.push(taskTitle);
 
                     const project = data.projects.filter(p => p.id === task.project_id);

@@ -4,6 +4,26 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unreleased
+
+### Added
+* Three new configurations related to overdue tasks display.
+* Tooltips for tasks render markdown strings
+
+### Changed
+* Display order of configurations in the settings.
+* Show `Sync Todoist` command on all views on the extension sidebar. Except `Task` view. Earlier, the command icon was shown only on Projects view.
+
+### Deprecated
+* Support for vscode before `1.62.0` removed.
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [1.0.0] - 2021-09-21
 
 ### Added
