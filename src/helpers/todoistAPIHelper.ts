@@ -7,7 +7,7 @@ import section from '../models/section';
 
 export default class todoistAPIHelper {
 
-    private todoistAPIUrl: String = 'https://api.todoist.com/rest/v1/';
+    private todoistAPIUrl: String = 'https://api.todoist.com/rest/v2/';
     private apiToken: String;
     private state: vscode.Memento;
 
