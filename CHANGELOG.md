@@ -4,6 +4,12 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.1] - 2022-12-21 
+
+### Fixed
+* Issue with extension package upload for README with svg links
+
+
 ## [1.1.0] - 2022-12-21 
 
 ### Added

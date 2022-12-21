@@ -1,7 +1,5 @@
 # code-with-todoist
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/spoorthi.code-with-todoist.svg)](https://marketplace.visualstudio.com/items?itemName=spoorthi.code-with-todoist) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/spoorthi.code-with-todoist.svg)](https://marketplace.visualstudio.com/items?itemName=spoorthi.code-with-todoist) 
-
 This extension allows you to track your [Todoist](https://todoist.com/) tasks from [vscode](https://code.visualstudio.com/).
 
 ## Configuration
