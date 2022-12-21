@@ -13,7 +13,7 @@ export class todayTaskProvider implements vscode.TreeDataProvider<todoistTreeVie
     onDidChangeTreeData?: vscode.Event<todoistTreeView | null | undefined> | undefined = this._onDidChangeTreeData.event;
 
     refresh(): void {
-		this._onDidChangeTreeData.fire();
+		this._onDidChangeTreeData.fire(undefined);
 	}
 
     constructor(context: vscode.Memento) {
@@ -27,18 +27,15 @@ export class todayTaskProvider implements vscode.TreeDataProvider<todoistTreeVie
     getChildren(element?: todoistTreeView | undefined): vscode.ProviderResult<todoistTreeView[]> {
         const data = settingsHelper.getTodoistData(this.state);
 
-        return Promise.resolve(new Promise(function (resolve, reject) {
-            if (data.tasks && data.tasks.length > 0) {
-                let todayTasks: task[] = [];
-                data.tasks.forEach(task => {
-                    if(task.due && isToday(task.due)) {
-                        todayTasks.push(task);
-                    }
-
-                });
-                resolve(formatTasks(todayTasks));
-            }
-        }));
+        if (data.tasks && data.tasks.length > 0) {
+            let todayTasks: task[] = [];
+            data.tasks.forEach(task => {
+                if(task.due && isToday(task.due)){
+                    todayTasks.push(task);
+                }
+            });
+            return formatTasks(todayTasks);
+        }
     }
 }
 

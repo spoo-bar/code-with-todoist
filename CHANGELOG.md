@@ -4,7 +4,7 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## Unreleased
+## [1.1.0] - 2022-12-21 
 
 ### Added
 * Three new configurations related to overdue tasks display.
@@ -17,11 +17,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Deprecated
 * Support for vscode before `1.62.0` removed.
 
-### Removed
-
 ### Fixed
-
-### Security
+* Migrating Todoist endpoint API from v1 to v2. Thanks to [@epicbananana](https://github.com/epicbananana)
 
 
 ## [1.0.0] - 2021-09-21

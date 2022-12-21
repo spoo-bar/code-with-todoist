@@ -30,8 +30,8 @@ export class taskProvider implements vscode.TreeDataProvider<todoistTreeView> {
             const data = settingsHelper.getTodoistData(this.context.globalState);
             const tasks = data.tasks.filter(t => t.id === this.taskId);
             if (tasks && tasks.length > 0) {
-                return Promise.resolve(new Promise(function (resolve, reject) {
-                    const task = tasks[0];
+                
+                const task = tasks[0];
                     let treeView: todoistTreeView[] = [];
 
                     // Showing task text
@@ -133,8 +133,8 @@ export class taskProvider implements vscode.TreeDataProvider<todoistTreeView> {
                     treeView.push(openInBrowser);
 
 
-                    resolve(treeView);
-                }));
+                    return treeView;
+                
             }
 
         }
