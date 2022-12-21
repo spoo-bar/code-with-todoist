@@ -38,53 +38,49 @@ export class projectsProvider implements vscode.TreeDataProvider<todoistTreeView
         const data = settingsHelper.getTodoistData(this.state);
 
         if (element) {
-            return Promise.resolve(new Promise(function (resolve, reject) {
-                let treeView: todoistTreeView[] = [];
-                if (data.projects && data.projects.length > 0) {
-                    let projects = formatProjects(data.projects.filter(p => p.parent_id && p.parent_id == parseInt(element.id!)));
-                    treeView.push(...projects);
-                }
-                if (data.sections && data.sections.length > 0) {
-                    let sections = formatSections(data.sections.filter(s => s.project_id.toString() === element.id));
-                    treeView.push(...sections);
-                }
-                if (data.tasks && data.tasks.length > 0) {
-                    let tasks: task[] = [];
+            let treeView: todoistTreeView[] = [];
+            if (data.projects && data.projects.length > 0) {
+                let projects = formatProjects(data.projects.filter(p => p.parent_id && p.parent_id == parseInt(element.id!)));
+                treeView.push(...projects);
+            }
+            if (data.sections && data.sections.length > 0) {
+                let sections = formatSections(data.sections.filter(s => s.project_id?.toString() === element.id));
+                treeView.push(...sections);
+            }
+            if (data.tasks && data.tasks.length > 0) {
+                let tasks: task[] = [];
 
-                    if (element.project) {
-                        tasks = (data.tasks.filter(
-                            t => t.project_id.toString() === element.id && t.section_id.toString() === "0" && !t.parent_id));
-                    }
-                    if (element.section) {
-                        tasks = (data.tasks.filter(
-                            t => (t.section_id.toString() === element.id && !t.parent_id)));
-                    }
-                    if (element.task) {
-                        tasks = (data.tasks.filter(
-                            t => t.parent_id?.toString() === element.id));
-                    }
-                    treeView.push(...formatTasks(tasks));
-                    resolve(treeView);
+                if (element.project) {
+                    tasks = (data.tasks.filter(
+                        t => t.project_id?.toString() === element.id && t.section_id == null && !t.parent_id));
                 }
-                else {
-                    api.getActiveTasks().then((tasks: task[]) => {
-                        treeView.push(...formatTasks(tasks.filter(t => t.project_id.toString() === element.id)));
-                        resolve(treeView);
-                    });
+                if (element.section) {
+                    tasks = (data.tasks.filter(
+                        t => (t.section_id?.toString() === element.id && !t.parent_id)));
                 }
-            }));
+                if (element.task) {
+                    tasks = (data.tasks.filter(
+                        t => t.parent_id?.toString() === element.id));
+                }
+                treeView.push(...formatTasks(tasks));
+                return treeView;
+            }
+            else {
+                api.getActiveTasks().then((tasks: task[]) => {
+                    treeView.push(...formatTasks(tasks.filter(t => t.project_id?.toString() === element.id)));
+                    return treeView;
+                });
+            }
         }
         else {
-            return Promise.resolve(new Promise(function (resolve, reject) {
-                if (data.projects && data.projects.length > 0) {
-                    resolve(formatProjects(data.projects.filter(p => !p.parent_id)));
-                }
-                else {
-                    api.getProjects().then((projects: project[]) => {
-                        resolve(formatProjects(projects.filter(p => !p.parent_id)));
-                    });
-                }
-            }));
+            if (data.projects && data.projects.length > 0) {
+                return formatProjects(data.projects.filter(p => !p.parent_id));
+            }
+            else {
+                api.getProjects().then((projects: project[]) => {
+                    return formatProjects(projects.filter(p => !p.parent_id));
+                });
+            }
         }
     }
 }
@@ -94,11 +90,11 @@ function formatTasks(tasks: task[]) {
     tasks = sortTasks();
     tasks.forEach(t => {
         let treeview = new todoistTreeView(t.content);
-        treeview.id = t.id.toString();
+        treeview.id = t.id?.toString();
         treeview.tooltip = new vscode.MarkdownString(t.content);
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
         treeview.task = t;
-        treeview.iconPath = path.join(__filename, '..', '..', '..', 'media', 'priority', t.priority.toString() + '.svg');
+        treeview.iconPath = path.join(__filename, '..', '..', '..', 'media', 'priority', t.priority?.toString() + '.svg');
         treeview.contextValue = 'todoistTask';
         treeview.command = {
             command: 'todoist.openTask',
@@ -120,7 +116,7 @@ function formatTasks(tasks: task[]) {
                 return tasks.sort((a, b) => a.priority > b.priority ? -1 : 1);
             case sortBy.Alphabetical:
                 return tasks.sort((a, b) => a.content > b.content ? 1 : -1);
-        }        
+        }
     }
 }
 
@@ -129,7 +125,7 @@ function formatSections(sections: section[]) {
     sections = sections.sort((a, b) => a.order > b.order ? 1 : -1);
     sections.forEach(s => {
         let treeview = new todoistTreeView(s.name);
-        treeview.id = s.id.toString();
+        treeview.id = s.id?.toString();
         treeview.tooltip = s.name;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
         treeview.section = s;
@@ -145,7 +141,7 @@ function formatProjects(projects: project[]) {
     projects = projects.sort((a, b) => a.order > b.order ? 1 : 0);
     projects.forEach(p => {
         let treeview = new todoistTreeView(p.name);
-        treeview.id = p.id.toString();
+        treeview.id = p.id?.toString();
         treeview.tooltip = p.name;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
         treeview.project = p;
@@ -157,8 +153,8 @@ function formatProjects(projects: project[]) {
 
     function getIconPath(p: project): string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri; } | vscode.ThemeIcon | undefined {
         if (p.shared) {
-            return path.join(__filename, '..', '..', '..', 'media', 'shared', p.color.toString() + '.svg');
+            return path.join(__filename, '..', '..', '..', 'media', 'shared', p.color?.toString() + '.svg');
         }
-        return path.join(__filename, '..', '..', '..', 'media', 'colours', p.color.toString() + '.svg');
+        return path.join(__filename, '..', '..', '..', 'media', 'colours', p.color?.toString() + '.svg');
     }
 }

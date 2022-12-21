@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import axios from 'axios';
+//import { TodoistApi } from '@doist/todoist-api-typescript'
 import settingsHelper from './settingsHelper';
 import project from '../models/project';
 import task from '../models/task';
@@ -8,7 +9,7 @@ import section from '../models/section';
 export default class todoistAPIHelper {
 
     private todoistAPIUrl: String = 'https://api.todoist.com/rest/v2/';
-    private apiToken: String;
+    private apiToken: string;
     private state: vscode.Memento;
 
     constructor(context: vscode.Memento) {
@@ -20,6 +21,9 @@ export default class todoistAPIHelper {
         const url = this.todoistAPIUrl;
         const jwt = this.apiToken;
         let state = this.state;
+
+        // const api = new TodoistApi(this.apiToken);
+        // api.getProjects().then(projects => {})
 
         return new Promise(function (resolve, reject) {
             axios.get(encodeURI(url + 'projects'), {
