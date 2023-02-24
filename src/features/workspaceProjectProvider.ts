@@ -5,10 +5,10 @@ import { ProjectsProvider } from './projectsProvider';
 
 export class WorkspaceProjectProvider extends ProjectsProvider {
 
-    private projectId: string;
+    private projectId: string | undefined;
     private extContext: vscode.Memento;
 
-    constructor(context: vscode.Memento, projectId: string) {
+    constructor(context: vscode.Memento, projectId: string | undefined) {
         super(context);
         this.projectId = projectId;
         this.extContext = context;
@@ -28,7 +28,7 @@ export class WorkspaceProjectProvider extends ProjectsProvider {
             }
             let projectName = workspaceProject.name;
                 element = new TodoistTreeItem(projectName, vscode.TreeItemCollapsibleState.Expanded);
-                element.id = this.projectId.toString();
+                element.id = this.projectId;
                 element.project = workspaceProject;
         }
         
