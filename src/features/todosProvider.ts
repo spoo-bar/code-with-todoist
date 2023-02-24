@@ -1,30 +1,31 @@
-import * as vscode from 'vscode';
-import path = require('path');
-import fileSystemHelper from '../helpers/fileSystemHelper';
+// import * as vscode from 'vscode';
+// import path = require('path');
+// import fileSystemHelper from '../helpers/fileSystemHelper';
 
-export class TodosProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+// export class TodosProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
-    private projectId: Number;
-    private extContext: vscode.Memento;
+//     private projectId: Number;
+//     private extContext: vscode.Memento;
 
-    constructor(context: vscode.Memento, projectId: Number) {
-        this.projectId = projectId;
-        this.extContext = context;
-        this.getTodos();
-    }
+//     constructor(context: vscode.Memento, projectId: Number) {
+//         this.projectId = projectId;
+//         this.extContext = context;
+//         this.getTodos();
+//     }
 
-    onDidChangeTreeData?: vscode.Event<vscode.TreeItem | null | undefined> | undefined;
+//     onDidChangeTreeData?: vscode.Event<vscode.TreeItem | null | undefined> | undefined;
 
-    getTreeItem(element: vscode.TreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
-        return element;
-    }
-    getChildren(element?: vscode.TreeItem | undefined): vscode.ProviderResult<vscode.TreeItem[]> {
-        return Promise.resolve(new Promise(function (resolve, reject) {
-            return element;
-        }));
-    }
+//     getTreeItem(element: vscode.TreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
+//         return element;
+//     }
 
-    getTodos() {
+//     // async getChildren(element?: vscode.TreeItem | undefined) {
+//     //     if (!element) {
 
-    }
-}
+//     //     return element;
+//     // }
+
+//     getTodos() {
+
+//     }
+// }
