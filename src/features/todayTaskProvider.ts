@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
-import task, { DueDate } from '../models/task';
-import { todoistTreeView } from '../models/todoistTreeView';
-import settingsHelper from '../helpers/settingsHelper';
-import path = require('path');
+import { TodoistTreeItem } from '../models/todoistTreeView';
+import SettingsHelper from '../helpers/settingsHelper';
+import * as path from 'path';
 import { sortBy } from '../helpers/sortBy';
+import type { Task, DueDate } from '@doist/todoist-api-typescript';
 
-export class todayTaskProvider implements vscode.TreeDataProvider<todoistTreeView> {
+export class TodayTaskProvider implements vscode.TreeDataProvider<TodoistTreeItem> {
 
     private state: vscode.Memento;
 
-    private _onDidChangeTreeData: vscode.EventEmitter<todoistTreeView | undefined> = new vscode.EventEmitter<todoistTreeView | undefined>();
-    onDidChangeTreeData?: vscode.Event<todoistTreeView | null | undefined> | undefined = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: vscode.EventEmitter<TodoistTreeItem | undefined> = new vscode.EventEmitter<TodoistTreeItem | undefined>();
+    onDidChangeTreeData?: vscode.Event<TodoistTreeItem | null | undefined> | undefined = this._onDidChangeTreeData.event;
 
     refresh(): void {
 		this._onDidChangeTreeData.fire(undefined);
@@ -20,38 +20,35 @@ export class todayTaskProvider implements vscode.TreeDataProvider<todoistTreeVie
         this.state = context;
     }
 
-    getTreeItem(element: todoistTreeView): vscode.TreeItem | Thenable<vscode.TreeItem> {
+    getTreeItem(element: TodoistTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;
     }
 
-    getChildren(element?: todoistTreeView | undefined): vscode.ProviderResult<todoistTreeView[]> {
-        const data = settingsHelper.getTodoistData(this.state);
+    getChildren() {
+        const data = SettingsHelper.getTodoistData(this.state);
 
-        if (data.tasks && data.tasks.length > 0) {
-            let todayTasks: task[] = [];
-            data.tasks.forEach(task => {
-                if(task.due && isToday(task.due)){
-                    todayTasks.push(task);
-                }
-            });
-            return formatTasks(todayTasks);
+        if (!data.tasks || data.tasks.length === 0) {
+            return;
         }
+
+        const todayTasks = data.tasks.filter(task => task.due && isToday(task.due));
+        return formatTasks(todayTasks);        
     }
 }
 
-function isToday(date: DueDate) : boolean {
+function isToday(date: DueDate) {
     let taskDate = new Date(date.date);
     let today = new Date();
-    return taskDate.getUTCFullYear() == today.getUTCFullYear() 
-    && taskDate.getUTCMonth() == today.getUTCMonth()
-    && taskDate.getUTCDate() == today.getUTCDate();
+    return taskDate.getUTCFullYear() === today.getUTCFullYear() 
+    && taskDate.getUTCMonth() === today.getUTCMonth()
+    && taskDate.getUTCDate() === today.getUTCDate();
 }
 
-function formatTasks(tasks: task[]) {
-    let activeTasks: todoistTreeView[] = [];
+function formatTasks(tasks: Task[]) {
+    let activeTasks: TodoistTreeItem[] = [];
     tasks = sortTasks();
     tasks.forEach(t => {
-        let treeview = new todoistTreeView(t.content);
+        let treeview = new TodoistTreeItem(t.content);
         treeview.id = t.id.toString();
         treeview.tooltip = t.content;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
@@ -69,8 +66,8 @@ function formatTasks(tasks: task[]) {
     });
     return activeTasks;
 
-    function sortTasks(): task[] {
-        const sortByValue = settingsHelper.getTaskSortBy();
+    function sortTasks(): Task[] {
+        const sortByValue = SettingsHelper.getTaskSortBy();
         switch (sortByValue) {
             case sortBy.Order:
                 return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
@@ -78,6 +75,8 @@ function formatTasks(tasks: task[]) {
                 return tasks.sort((a, b) => a.priority > b.priority ? -1 : 1);
             case sortBy.Alphabetical:
                 return tasks.sort((a, b) => a.content > b.content ? 1 : -1);
+            default:
+                return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
         }        
     }
 }

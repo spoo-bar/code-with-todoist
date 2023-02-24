@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import settingsHelper from './settingsHelper';
+import SettingsHelper from './settingsHelper';
 
-export default class notificationHelper {
+export default class NotificationHelper {
 
     public static setupTaskNotifications(context: vscode.Memento): NodeJS.Timeout[] {
         let taskNotification: NodeJS.Timeout[] = [];
-        let tasks = settingsHelper.getTodoistData(context).tasks;
+        let tasks = SettingsHelper.getTodoistData(context).tasks;
         for (const task of tasks) {
             if (task.due && task.due.datetime) {
                 const time = new Date(task.due.datetime);

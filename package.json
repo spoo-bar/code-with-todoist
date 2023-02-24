@@ -269,6 +269,6 @@
 		"vscode-test": "^1.6.1"
 	},
 	"dependencies": {
-		"axios": "0.21.2"
+		"@doist/todoist-api-typescript": "2.1.2"
 	}
 }

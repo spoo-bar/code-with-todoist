@@ -1,42 +1,42 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import settingsHelper from './helpers/settingsHelper';
-import { projectsProvider } from './features/projectsProvider';
-import todoistAPIHelper from './helpers/todoistAPIHelper';
-import { taskProvider } from './features/taskProvider';
-import task from './models/task';
-import { todayTaskProvider } from './features/todayTaskProvider';
-import { workspaceProjectProvider } from './features/workspaceProjectProvider';
-import notificationHelper from './helpers/notificationHelper';
+import SettingsHelper from './helpers/settingsHelper';
+import { ProjectsProvider } from './features/projectsProvider';
+import TodoistAPIHelper from './helpers/todoistAPIHelper';
+import { TaskProvider } from './features/taskProvider';
+import { TodayTaskProvider } from './features/todayTaskProvider';
+import { WorkspaceProjectProvider } from './features/workspaceProjectProvider';
+import NotificationHelper from './helpers/notificationHelper';
+
+import type { Task } from '@doist/todoist-api-typescript';
 
 let syncInterval!: NodeJS.Timeout;
 let taskNotifications!: NodeJS.Timeout[];
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
 	// On Extension Activation Validating Token -----------------------------------------
-	const apiToken = settingsHelper.getTodoistAPIToken();
-	const projectsTreeViewProvider = new projectsProvider(context.globalState);
-	const taskTreeViewProvider = new taskProvider(context);
-	const todayTaskViewProvider = new todayTaskProvider(context.globalState);
-	let workspaceProjectTreeViewProvider: workspaceProjectProvider;
+	const apiToken = SettingsHelper.getTodoistAPIToken();
+	const projectsTreeViewProvider = new ProjectsProvider(context.globalState);
+	const taskTreeViewProvider = new TaskProvider(context);
+	const todayTaskViewProvider = new TodayTaskProvider(context.globalState);
+	let workspaceProjectTreeViewProvider: WorkspaceProjectProvider;
 
 	if (!apiToken) {
 		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
 	}
 	else {
-		syncInterval = setInterval(syncTodoist, settingsHelper.getSyncInterval());
+		syncInterval = setInterval(syncTodoist, SettingsHelper.getSyncInterval());
 		initTreeView();
 	}
 
-	if (settingsHelper.showTodaysTasks()) {
+	if (SettingsHelper.showTodaysTasks()) {
 		vscode.commands.executeCommand('setContext', 'showTodaysTasks', true);
 	}
 
-	if (settingsHelper.showTaskNotifications()) {
-		taskNotifications = notificationHelper.setupTaskNotifications(context.globalState);
+	if (SettingsHelper.showTaskNotifications()) {
+		taskNotifications = NotificationHelper.setupTaskNotifications(context.globalState);
 	}
 
 	// if (settingsHelper.showWorkspaceTodos()) {
@@ -57,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Commands -------------------------------------------------------------------------
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.openTask', (taskId) => {
-		settingsHelper.setSelectedTask(context.workspaceState, parseInt(taskId));
+		SettingsHelper.setSelectedTask(context.workspaceState, taskId);
 		vscode.commands.executeCommand('setContext', 'taskSelected', true);
 		taskTreeViewProvider.refresh(undefined);
 	}));
@@ -67,15 +67,15 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.openTaskInBrowser', (taskUrl) => {
-		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(taskUrl))
+		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(taskUrl));
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', (task: task) => {
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.closeTask', (task: Task) => {
 		if (task) {
 			closeSelectedTask(task);
 		}
 		else {
-			vscode.window.showErrorMessage("No task was selected. Select a task from the sidebar.")
+			vscode.window.showErrorMessage("No task was selected. Select a task from the sidebar.");
 		}
 	}));
 
@@ -83,26 +83,29 @@ export function activate(context: vscode.ExtensionContext) {
 		openCustomTask(filePath, line, column);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('todoist.attachproject', () => {
-		if (vscode.workspace.name) {
-			let workspaceName = vscode.workspace.name;
-			var projectId = settingsHelper.getWorkspaceProject(context.globalState, workspaceName);
-			if (projectId == 0) {
-				attachworkspaceProject();
-			}
-			else {
-				vscode.window.showInformationMessage("There is already a project attached to this workspace. Do you want to overwrite it?", {
-					modal: false
-				}, 'Yes', 'No').then(response => {
-					if (response == 'Yes') {
-						attachworkspaceProject();
-					}
-				});
-			}
-		}
-		else {
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.attachproject', async () => {
+		if (!vscode.workspace.name) {
 			vscode.window.showErrorMessage("You have not yet opened a folder. Open a folder and retry.");
+			return;
 		}
+
+		let workspaceName = vscode.workspace.name;
+		const projectId = SettingsHelper.getWorkspaceProject(context.globalState, workspaceName);
+
+		if (!projectId) {
+			attachworkspaceProject();
+			return;
+		}
+		
+		const ALERT_MESSAGE = "There is already a project attached to this workspace. Do you want to overwrite it?";
+		const OPTIONS = ['Yes', 'No'] as const;
+
+		const response = await vscode.window.showInformationMessage(ALERT_MESSAGE, { modal: false }, ...OPTIONS);
+		
+		if (response === OPTIONS[0]) {
+			attachworkspaceProject();
+		}
+		
 	}));
 
 	// context.subscriptions.push(vscode.commands.registerCommand('todoist.addProject', () => {
@@ -121,53 +124,54 @@ export function activate(context: vscode.ExtensionContext) {
 	// 	});
 	// }));
 
-	context.subscriptions.push(vscode.commands.registerCommand('todoist.createTask', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.createTask', async () => {
 		let projectName = "Inbox";
-		let workspaceProjectId = 0;
+		let workspaceProjectId: string | undefined;
+
 		if (vscode.workspace.name) {
-			workspaceProjectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
-			if (workspaceProjectId != 0) {
-				let projects = settingsHelper.getTodoistData(context.globalState).projects;
-				projectName = projects.filter(p => p.id == workspaceProjectId)[0].name;
+			workspaceProjectId = SettingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
+
+			if (workspaceProjectId) {
+				let projects = SettingsHelper.getTodoistData(context.globalState).projects;
+				projectName = projects.filter(p => p.id === workspaceProjectId)[0].name;
 			}
 		}
 
-		vscode.window.showInputBox({
-			prompt: "Creating task under project : " + projectName,
+		const taskName = await vscode.window.showInputBox({ prompt: "Creating task under project : " + projectName });
 
-		}).then(taskName => {
-			if (taskName) {
+		if(!taskName) {
+			return;
+		}
+			
 
-				const progressOptions: vscode.ProgressOptions = {
-					location: vscode.ProgressLocation.Notification,
-					title: "Creating task '" + taskName + "' under project : " + projectName,
-					cancellable: false
-				};
+		const progressOptions: vscode.ProgressOptions = {
+			location: vscode.ProgressLocation.Notification,
+			title: "Creating task '" + taskName + "' under project : " + projectName,
+			cancellable: false
+		};
 
-				vscode.window.withProgress(progressOptions, (progress, token) => {
-					token.onCancellationRequested(() => { });
-					progress.report({ message: '', increment: 1 });
+		vscode.window.withProgress(progressOptions, (progress, token) => {
+			token.onCancellationRequested(() => { });
+			progress.report({ message: '', increment: 1 });
 
-					return new Promise(resolve => {
-						const state = context.globalState;
-						const apiHelper = new todoistAPIHelper(state);
-						progress.report({ message: '', increment: 50 });
+			return new Promise(resolve => {
+				const state = context.globalState;
+				const apiHelper = new TodoistAPIHelper(state);
+				progress.report({ message: '', increment: 50 });
 
-						apiHelper.createTask(taskName, workspaceProjectId).then(task => {
-							progress.report({ message: '', increment: 50 });
-							syncTodoist();
-							resolve(undefined);
-						}).catch((err) => {
-							vscode.window.showErrorMessage(err);
-
-						});
-					});
+				apiHelper.createTask(taskName, workspaceProjectId).then(task => {
+					progress.report({ message: '', increment: 50 });
+					syncTodoist();
+					resolve(undefined);
+				}).catch((err) => {
+					vscode.window.showErrorMessage(err);
 
 				});
+			});
 
-			}
-		})
-	}))
+		});
+		
+	}));
 
 	// Event Handlers  -------------------------------------------------------------------
 
@@ -194,39 +198,47 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	}
 
-	function closeSelectedTask(task: task) {
-		let taskId: Number;
-		if (task) {
-			taskId = task.id;
+	async function closeSelectedTask(task: Task) {
+		const taskId = task ? task.id : SettingsHelper.getSelectedTask(context.workspaceState);
+
+		if (!taskId) {
+			vscode.window.showErrorMessage("No task was selected");
+			return;
 		}
-		else {
-			taskId = settingsHelper.getSelectedTask(context.workspaceState);
+
+		const OPTIONS = ['Yes', 'No'] as const;
+		const INFORMATION_MESSAGE = "Are you sure you want to mark the task as done?";
+	
+		const response = await vscode.window.showInformationMessage(INFORMATION_MESSAGE, { modal: false }, ...OPTIONS);
+
+		if (response === OPTIONS[1]) {
+			return;
 		}
-		vscode.window.showInformationMessage("Are you sure you want to mark the task as done?", {
-			modal: false
-		}, 'Yes', 'No').then(response => {
-			if (response == 'Yes') {
-				const apiHelper = new todoistAPIHelper(context.globalState);
-				apiHelper.closeOpenTask(taskId).then(response => {
-					if (response) {
-						vscode.commands.executeCommand('setContext', 'taskSelected', false);
-						syncTodoist();
-					}
-				}).catch(err => {
-					vscode.window.showErrorMessage(err);
-				});
-			}
-		});
+		
+		const apiHelper = new TodoistAPIHelper(context.globalState);
+	
+		const success = await apiHelper.closeOpenTask(taskId).catch(() => false);
+
+		if (success) {
+			vscode.commands.executeCommand('setContext', 'taskSelected', false);
+			syncTodoist();
+		} else {
+			vscode.window.showErrorMessage("Failed to close task");
+		}
 	}
 
 	function initTreeView() {
-		settingsHelper.setSelectedTask(context.workspaceState, 0);
-		let lastSyncTime = new Date(settingsHelper.getTodoistData(context.globalState).lastSyncTime).getTime();
+		SettingsHelper.setSelectedTask(context.workspaceState, undefined);
+	
+		let lastSyncTime = new Date(SettingsHelper.getTodoistData(context.globalState).lastSyncTime!).getTime();
+
 		if (isNaN(lastSyncTime)) {
 			lastSyncTime = new Date(0, 0, 0).getTime();
 		}
+
 		const currentTime = new Date().getTime();
-		if (currentTime - lastSyncTime > settingsHelper.getSyncInterval()) { // 10 minutes
+
+		if (currentTime - lastSyncTime > SettingsHelper.getSyncInterval()) {
 			syncTodoist();
 		}
 
@@ -239,8 +251,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	function showWorkspaceProjects() {
 		if (vscode.workspace.name) {
-			let projectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
-			workspaceProjectTreeViewProvider = new workspaceProjectProvider(context.globalState, projectId);
+			let projectId = SettingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
+			workspaceProjectTreeViewProvider = new WorkspaceProjectProvider(context.globalState, projectId);
 			vscode.window.registerTreeDataProvider('workspaceProject', workspaceProjectTreeViewProvider);
 			vscode.window.registerTreeDataProvider('workspaceProjectExt', workspaceProjectTreeViewProvider);
 		}
@@ -248,9 +260,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	function syncTodoist() {
 		const state = context.globalState;
-		const apiHelper = new todoistAPIHelper(state);
-		const projectsTreeViewProvider = new projectsProvider(state);
-		const todayTaskTreeViewProvider = new todayTaskProvider(state);
+		const apiHelper = new TodoistAPIHelper(state);
+		const projectsTreeViewProvider = new ProjectsProvider(state);
+		const todayTaskTreeViewProvider = new TodayTaskProvider(state);
 
 		const progressOptions: vscode.ProgressOptions = {
 			location: vscode.ProgressLocation.Notification,
@@ -268,17 +280,17 @@ export function activate(context: vscode.ExtensionContext) {
 						progress.report({ message: ' : Tasks', increment: 33 });
 						apiHelper.syncSections().then(() => {
 							progress.report({ increment: 33, message: "Syncing: Completed" });
-							let data = settingsHelper.getTodoistData(state);
+							let data = SettingsHelper.getTodoistData(state);
 							data.lastSyncTime = new Date();
-							settingsHelper.setTodoistData(state, data);
+							SettingsHelper.setTodoistData(state, data);
 							vscode.window.registerTreeDataProvider('projects', projectsTreeViewProvider);
 							vscode.window.registerTreeDataProvider('today', todayTaskTreeViewProvider);
 							showWorkspaceProjects();
 							todayTaskTreeViewProvider.refresh();
 							projectsTreeViewProvider.refresh(undefined);
 							workspaceProjectTreeViewProvider.refresh(undefined);
-							if (settingsHelper.showTaskNotifications()) {
-								taskNotifications = notificationHelper.setupTaskNotifications(context.globalState);
+							if (SettingsHelper.showTaskNotifications()) {
+								taskNotifications = NotificationHelper.setupTaskNotifications(context.globalState);
 							}
 							resolve();
 						}).catch(error => {
@@ -298,18 +310,25 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	}
 
-	function attachworkspaceProject() {
-		let workspaceName = vscode.workspace.name;
-		let projects = settingsHelper.getTodoistData(context.globalState).projects;
-		vscode.window.showQuickPick(projects, {
+	async function attachworkspaceProject() {
+		const workspaceName = vscode.workspace.name;
+
+		if (!workspaceName) {
+			vscode.window.showErrorMessage("No workspace is open");
+			return;
+		}
+
+		let projects = SettingsHelper.getTodoistData(context.globalState).projects;
+	
+		const selectedProject = await vscode.window.showQuickPick(projects, {
 			canPickMany: false,
-		}).then(selectedProject => {
-			if (selectedProject) {
-				settingsHelper.setWorkspaceProject(context.globalState, workspaceName!, selectedProject.id);
-				showWorkspaceProjects();
-				workspaceProjectTreeViewProvider.refresh(undefined);
-			}
 		});
+
+		if (selectedProject) {
+			SettingsHelper.setWorkspaceProject(context.globalState, workspaceName, selectedProject.id);
+			showWorkspaceProjects();
+			workspaceProjectTreeViewProvider.refresh(undefined);
+		}
 	}
 }
 

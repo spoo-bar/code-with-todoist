@@ -1,33 +1,33 @@
 import * as vscode from 'vscode';
-import { todoistTreeView } from '../models/todoistTreeView';
-import settingsHelper from '../helpers/settingsHelper';
-import { projectsProvider } from './projectsProvider';
+import { TodoistTreeItem } from '../models/todoistTreeView';
+import SettingsHelper from '../helpers/settingsHelper';
+import { ProjectsProvider } from './projectsProvider';
 
-export class workspaceProjectProvider extends projectsProvider {
+export class WorkspaceProjectProvider extends ProjectsProvider {
 
-    private projectId: Number;
+    private projectId: string;
     private extContext: vscode.Memento;
 
-    constructor(context: vscode.Memento, projectId: Number) {
+    constructor(context: vscode.Memento, projectId: string) {
         super(context);
         this.projectId = projectId;
         this.extContext = context;
     }
 
-    getTreeItem(element: todoistTreeView): vscode.TreeItem | Thenable<vscode.TreeItem> {
+    getTreeItem(element: TodoistTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return super.getTreeItem(element);
     }
 
-    getChildren(element?: todoistTreeView | undefined): vscode.ProviderResult<todoistTreeView[]> {
+    getChildren(element?: TodoistTreeItem | undefined): vscode.ProviderResult<TodoistTreeItem[]> {
 
         if(!element) {
-            let projects = settingsHelper.getTodoistData(this.extContext).projects;
-            let workspaceProject = projects.filter(p => p.id == this.projectId)[0]; 
+            let projects = SettingsHelper.getTodoistData(this.extContext).projects;
+            let workspaceProject = projects.filter(p => p.id === this.projectId)[0]; 
             if(!workspaceProject) {
                 return null;
             }
             let projectName = workspaceProject.name;
-                element = new todoistTreeView(projectName, vscode.TreeItemCollapsibleState.Expanded);
+                element = new TodoistTreeItem(projectName, vscode.TreeItemCollapsibleState.Expanded);
                 element.id = this.projectId.toString();
                 element.project = workspaceProject;
         }

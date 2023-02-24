@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import path = require('path');
 import fileSystemHelper from '../helpers/fileSystemHelper';
 
-export class todosProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+export class TodosProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     private projectId: Number;
     private extContext: vscode.Memento;
@@ -20,8 +20,8 @@ export class todosProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
     }
     getChildren(element?: vscode.TreeItem | undefined): vscode.ProviderResult<vscode.TreeItem[]> {
         return Promise.resolve(new Promise(function (resolve, reject) {
-            return element
-        }))
+            return element;
+        }));
     }
 
     getTodos() {
