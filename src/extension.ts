@@ -39,20 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
 		taskNotifications = NotificationHelper.setupTaskNotifications(context.globalState);
 	}
 
-	// if (settingsHelper.showWorkspaceTodos()) {
-	// 	var regex = settingsHelper.getTodosRegEx();
-	// 	if (!regex) {
-	// 		vscode.window.showErrorMessage("RegEx value to identify Todos in the project is not set. Set it under File > Preferences > Settings > Code With Todoist");
-	// 	}
-	// 	else {
-	// 		if (vscode.workspace.name) {
-	// 			let projectId = settingsHelper.getWorkspaceProject(context.globalState, vscode.workspace.name);
-	// 			todoViewProvider = new todosProvider(context.globalState, projectId);
-	// 			vscode.window.registerTreeDataProvider('todos', todoViewProvider);
-	// 		}
-			
-	// 	}
-	// }
+	// TODO - Add support for workspace todos
 
 	// Commands -------------------------------------------------------------------------
 
