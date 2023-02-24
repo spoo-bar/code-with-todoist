@@ -1,9 +1,10 @@
+import type { Task, DueDate } from '@doist/todoist-api-typescript';
+
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { TodoistTreeItem } from '../models/todoistTreeView';
 import SettingsHelper from '../helpers/settingsHelper';
-import * as path from 'path';
-import { sortBy } from '../helpers/sortBy';
-import type { Task, DueDate } from '@doist/todoist-api-typescript';
+import { SORT_BY } from '../constants';
 
 export class TodayTaskProvider implements vscode.TreeDataProvider<TodoistTreeItem> {
 
@@ -69,11 +70,11 @@ function formatTasks(tasks: Task[]) {
     function sortTasks(): Task[] {
         const sortByValue = SettingsHelper.getTaskSortBy();
         switch (sortByValue) {
-            case sortBy.Order:
+            case SORT_BY.Order:
                 return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
-            case sortBy.Priority:
+            case SORT_BY.Priority:
                 return tasks.sort((a, b) => a.priority > b.priority ? -1 : 1);
-            case sortBy.Alphabetical:
+            case SORT_BY.Alphabetical:
                 return tasks.sort((a, b) => a.content > b.content ? 1 : -1);
             default:
                 return tasks.sort((a, b) => a.order > b.order ? 1 : -1);

@@ -1,8 +1,8 @@
+import type { Project, Task, Section } from '@doist/todoist-api-typescript';
 import * as vscode from 'vscode';
 import { TodoistApi } from '@doist/todoist-api-typescript';
 import SettingsHelper from './settingsHelper';
-import { normalizeToProjectQuickPick } from '../models/project';
-import type { Project, Task, Section } from '@doist/todoist-api-typescript';
+import { normalizeToProjectQuickPick } from './normalizeProject';
 
 export default class TodoistAPIHelper {
 
@@ -104,7 +104,6 @@ export default class TodoistAPIHelper {
     }
 
 
-    // TODO : Remove
     public async getProjects() {
         const state = this.state;
 

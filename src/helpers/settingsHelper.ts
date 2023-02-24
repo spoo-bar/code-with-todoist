@@ -1,84 +1,81 @@
-import * as vscode from 'vscode';
-import { TODOIST_INITIAL_STATE, TodoistState } from '../models/todoist';
-import { sortBy } from './sortBy';
-
-const todoistData = "todoist";
-const selectedTask = "todoistSelectedTask";
+import type { TodoistState } from '../types';
+import { workspace, Memento} from 'vscode';
+import { TODOIST_INITIAL_STATE, SORT_BY, CONTEXT_KEYS } from '../constants';
 
 export default class SettingsHelper {
     public static getTodoistAPIToken() {
-        return vscode.workspace.getConfiguration().get<string>("apiToken");
+        return workspace.getConfiguration().get<string>("apiToken");
     }
 
     public static getSyncInterval() {
-        return vscode.workspace.getConfiguration().get<number>("syncInternval") ?? 600000;
+        return workspace.getConfiguration().get<number>("syncInternval") ?? 600000;
     }
 
     public static getTaskSortBy() {
-        const value = vscode.workspace.getConfiguration().get<sortBy>("taskDisplay.sortBy");
+        const value = workspace.getConfiguration().get<SORT_BY>("taskDisplay.sortBy");
         return value;
     }
 
     public static showTaskNotifications() {
-        return vscode.workspace.getConfiguration().get<boolean>("taskDisplay.showTaskNotifications");
+        return workspace.getConfiguration().get<boolean>("taskDisplay.showTaskNotifications");
     }
 
     public static showTodaysTasks(){
-        return vscode.workspace.getConfiguration().get<boolean>("todayView.showTodaysTasks");
+        return workspace.getConfiguration().get<boolean>("todayView.showTodaysTasks");
     }
 
     public static showOverdueTasks() {
-        return vscode.workspace.getConfiguration().get<boolean>("todayView.showOverdueTasks");
+        return workspace.getConfiguration().get<boolean>("todayView.showOverdueTasks");
     }
 
     public static getOverdueDaysToDisplay() {
-        return vscode.workspace.getConfiguration().get<number>("todayView.overdueDaysToDisplay") ?? 1;
+        return workspace.getConfiguration().get<number>("todayView.overdueDaysToDisplay") ?? 1;
     }
 
     public static getOverdueDisplayText() {
-        return vscode.workspace.getConfiguration().get<string>("todayView.overdueDisplayPrefix") ?? "❗";
+        return workspace.getConfiguration().get<string>("todayView.overdueDisplayPrefix") ?? "❗";
     }
 
     public static useGitIgnore() {
-        return vscode.workspace.getConfiguration().get<boolean>("code.todoist.useGitIgnore");
+        return workspace.getConfiguration().get<boolean>("code.todoist.useGitIgnore");
     }
 
     public static showWorkspaceTodos() {
-        return vscode.workspace.getConfiguration().get<boolean>("identifyTodos.display");
+        return workspace.getConfiguration().get<boolean>("identifyTodos.display");
     }
 
     public static getTodosRegEx() {
-        return vscode.workspace.getConfiguration().get<string>("identifyTodos.regex")?? "*";
+        return workspace.getConfiguration().get<string>("identifyTodos.regex")?? "*";
     }
 
-    public static getTodoistData(context: vscode.Memento) {
-        const data = context.get<string>(todoistData);
+    public static getTodoistData(context: Memento) {
+        const data = context.get<string>(CONTEXT_KEYS.TODOIST_DATA);
         if (data) {
             return JSON.parse(data) as TodoistState;
         }
         return TODOIST_INITIAL_STATE;
     }
 
-    public static setTodoistData(context: vscode.Memento, data: TodoistState) {
-        context.update(todoistData, JSON.stringify(data));
+    public static setTodoistData(context: Memento, data: TodoistState) {
+        context.update(CONTEXT_KEYS.TODOIST_DATA, JSON.stringify(data));
         return;
     }
 
-    public static getSelectedTask(context: vscode.Memento) {
-        let taskId = context.get<string>(selectedTask);
+    public static getSelectedTask(context: Memento) {
+        let taskId = context.get<string>(CONTEXT_KEYS.TODOIST_SELECTED_TASK);
         return taskId;
     }
 
-    public static setSelectedTask(context: vscode.Memento, taskId?: string) {
-        context.update(selectedTask, taskId);
+    public static setSelectedTask(context: Memento, taskId?: string) {
+        context.update(CONTEXT_KEYS.TODOIST_SELECTED_TASK, taskId);
         return;
     }
 
-    public static setWorkspaceProject(context: vscode.Memento, workspaceName: string, projectId: string) {
+    public static setWorkspaceProject(context: Memento, workspaceName: string, projectId: string) {
         context.update(workspaceName, projectId);
     }
 
-    public static getWorkspaceProject(context: vscode.Memento, workspaceName: string) {
+    public static getWorkspaceProject(context: Memento, workspaceName: string) {
         let projectId = context.get<string>(workspaceName);
 
         return projectId;

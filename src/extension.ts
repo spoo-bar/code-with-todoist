@@ -1,3 +1,5 @@
+import type { Task } from '@doist/todoist-api-typescript';
+
 import * as vscode from 'vscode';
 import SettingsHelper from './helpers/settingsHelper';
 import { ProjectsProvider } from './features/projectsProvider';
@@ -7,7 +9,6 @@ import { TodayTaskProvider } from './features/todayTaskProvider';
 import { WorkspaceProjectProvider } from './features/workspaceProjectProvider';
 import NotificationHelper from './helpers/notificationHelper';
 
-import type { Task } from '@doist/todoist-api-typescript';
 
 let syncInterval!: NodeJS.Timeout;
 let taskNotifications!: NodeJS.Timeout[];

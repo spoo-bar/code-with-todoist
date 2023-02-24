@@ -1,7 +1,5 @@
-import * as vscode from 'vscode';
-import { Project } from '@doist/todoist-api-typescript';
-
-export type ProjectQuickPick = Project & vscode.QuickPickItem;
+import type { Project } from "@doist/todoist-api-typescript";
+import type { ProjectQuickPick } from "../types";
 
 export function normalizeToProjectQuickPick(apiProject: Project): ProjectQuickPick {
     const label = apiProject.isFavorite ? `⭐ ${apiProject.name}` : apiProject.name;
