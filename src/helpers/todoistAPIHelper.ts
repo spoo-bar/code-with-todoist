@@ -1,312 +1,143 @@
+import type { Project, Task, Section } from '@doist/todoist-api-typescript';
 import * as vscode from 'vscode';
-import axios from 'axios';
-//import { TodoistApi } from '@doist/todoist-api-typescript'
-import settingsHelper from './settingsHelper';
-import project from '../models/project';
-import task from '../models/task';
-import section from '../models/section';
+import { TodoistApi } from '@doist/todoist-api-typescript';
+import SettingsHelper from './settingsHelper';
+import { normalizeToProjectQuickPick } from './normalizeProject';
 
-export default class todoistAPIHelper {
+export default class TodoistAPIHelper {
 
-    private todoistAPIUrl: String = 'https://api.todoist.com/rest/v2/';
     private apiToken: string;
     private state: vscode.Memento;
 
     constructor(context: vscode.Memento) {
-        this.apiToken = settingsHelper.getTodoistAPIToken()!;
+        this.apiToken = SettingsHelper.getTodoistAPIToken()!;
         this.state = context;
     }
 
-    public syncProjects(): Promise<void> {
-        const url = this.todoistAPIUrl;
-        const jwt = this.apiToken;
-        let state = this.state;
+    public async syncProjects() {
+        const state = this.state;
 
-        // const api = new TodoistApi(this.apiToken);
-        // api.getProjects().then(projects => {})
+        const api = new TodoistApi(this.apiToken);
 
-        return new Promise(function (resolve, reject) {
-            axios.get(encodeURI(url + 'projects'), {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                }
-            }).then(response => {
-                if (response.status === 200) {
-                    let data = settingsHelper.getTodoistData(state);
-                    data.projects = [];
-                    response.data.forEach((element: any) => {
-                        data.projects.push(project.deserialize(element));
-                    });
-                    settingsHelper.setTodoistData(state, data);
-                    resolve();
-                }
-                else {
-                    reject(response.statusText)
-                }
-            }).catch(error => {
-                if(error.code == "ENOTFOUND") {
-                    reject("Check your internet connection.");
-                }
-                else if(error.response.status === 400) {
-                    reject("Ensure Todoist API token is set.");
-                }
-                else if(error.response.status === 403) {
-                    reject("Incorrect Todoist API token. Update the token in the settings.")
-                }
-                else {
-                    reject("Unknown error. " + error.message);
-                }
-            });
+        const responseProjects = await api.getProjects().catch(() => [] as Project[]);
+
+        // Do not update if there are no projects (an error occurred)
+        if (responseProjects.length === 0) {
+            return;
+        }
+
+        let data = SettingsHelper.getTodoistData(state);
+        data.projects = [];
+
+        responseProjects.forEach((apiProject) => {
+            data.projects.push(normalizeToProjectQuickPick(apiProject));
         });
-    }
-
-    public syncActiveTasks(): Promise<void> {
-        const url = this.todoistAPIUrl;
-        const jwt = this.apiToken;
-        let state = this.state;
-
-        return new Promise(function (resolve, reject) {
-            axios.get(encodeURI(url + 'tasks'), {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                }
-            }).then(response => {
-                if (response.status === 200) {
-                    let data = settingsHelper.getTodoistData(state);
-                    data.tasks = [];
-                    response.data.forEach((element: any) => {
-                        if(!element.completed)
-                            data.tasks.push(task.deserialize(element));
-                    });
-                    settingsHelper.setTodoistData(state, data);
-                    resolve();
-                }
-                else {
-                    reject(response.statusText)
-                }
-            }).catch(error => {
-                if(error.code == "ENOTFOUND") {
-                    reject("Check your internet connection.");
-                }
-                else if(error.response.status === 400) {
-                    reject("Ensure Todoist API token is set.");
-                }
-                else if(error.response.status === 403) {
-                    reject("Incorrect Todoist API token. Update the token in the settings.")
-                }
-                else {
-                    reject("Unknown error. " + error.message);
-                }
-            });
-        });
-    }
-
-    public syncSections(): Promise<void> {
-        const url = this.todoistAPIUrl;
-        const jwt = this.apiToken;
-        let state = this.state;
-
-        return new Promise(function (resolve, reject) {
-            axios.get(encodeURI(url + 'sections'), {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                }
-            }).then(response => {
-                if (response.status === 200) {
-                    let data = settingsHelper.getTodoistData(state);
-                    data.sections = [];
-                    response.data.forEach((element: any) => {
-                        data.sections.push(section.deserialize(element));
-                    });
-                    settingsHelper.setTodoistData(state, data);
-                    resolve();
-                }
-                else {
-                    reject(response.statusText)
-                }
-            }).catch(error => {
-                if(error.code == "ENOTFOUND") {
-                    reject("Check your internet connection.");
-                }
-                else if(error.response.status === 400) {
-                    reject("Ensure Todoist API token is set.");
-                }
-                else if(error.response.status === 403) {
-                    reject("Incorrect Todoist API token. Update the token in the settings.")
-                }
-                else {
-                    reject("Unknown error. " + error.message);
-                }
-            });
-        });
-    }
-
-    public closeOpenTask(taskId: Number): Promise<boolean> {
-        const url = this.todoistAPIUrl;
-        const jwt = this.apiToken;
         
-        return new Promise(function (resolve, reject) {
-            let requestUrl = encodeURI(url + 'tasks/' + taskId + '/close');
-            axios.post(requestUrl, {}, {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                }
-            }).then(response => {
-                if (parseInt(response.status.toString()) === 204) {
-                    resolve(true);
-                }
-                else {
-                    reject(response.statusText)
-                }
-            }).catch(error => {
-                if(error.code == "ENOTFOUND") {
-                    reject("Check your internet connection.");
-                }
-                else if(error.response.status === 400) {
-                    reject("Ensure Todoist API token is set.");
-                }
-                else if(error.response.status === 403) {
-                    reject("Incorrect Todoist API token. Update the token in the settings.")
-                }
-                else {
-                    reject("Unknown error. " + error.message);
-                }
-            });
-        });
+        SettingsHelper.setTodoistData(state, data);
     }
 
-    public createProject(projectName: string): Promise<project> {
-        const url = this.todoistAPIUrl;
-        const jwt = this.apiToken;
+    public async syncActiveTasks(): Promise<void> {
+        const state = this.state;
 
-        return new Promise(function (resolve, reject) {
-            axios.post(encodeURI(url + 'projects'), {
-                name: projectName
-            }, {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                }
-            }).then(response => {
-                if (response.status === 200) {
-                    let newProject = project.deserialize(response.data);
-                    resolve(newProject);
-                }
-                else {
-                    reject(response.statusText)
-                }
-            }).catch(error => {
-                if(error.code == "ENOTFOUND") {
-                    reject("Check your internet connection.");
-                }
-                else if(error.response.status === 400) {
-                    reject("Ensure Todoist API token is set.");
-                }
-                else if(error.response.status === 403) {
-                    reject("Incorrect Todoist API token. Update the token in the settings.")
-                }
-                else {
-                    reject("Unknown error. " + error.message);
-                }
-            });
-        });
+        const api = new TodoistApi(this.apiToken);
+        const responseTasks = await api.getTasks().catch(() => [] as Task[]);
+
+        // Do not update if there are no tasks (an error occurred)
+        if (responseTasks.length === 0) {
+            return;
+        }
+
+        let data = SettingsHelper.getTodoistData(state);
+        data.tasks = responseTasks;
+
+        SettingsHelper.setTodoistData(state, data);        
     }
 
-    public createTask(taskText: string, project_id: number): Promise<task> {    
-        const url = this.todoistAPIUrl;
-        const jwt = this.apiToken;
-
-        return new Promise(function (resolve, reject) {  
-            axios.post(encodeURI(url + 'tasks'), {
-                content: taskText,
-                project_id: project_id
-            }, {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                }
-            }).then(response => {
-                if (response.status === 200) {
-                    let newTask = task.deserialize(response.data);
-                    resolve(newTask);
-                }
-                else {
-                    reject(response.statusText)
-                }
-            }).catch(error => {
-                if(error.code == "ENOTFOUND") {
-                    reject("Check your internet connection.");
-                }
-                else if(error.response.status === 400) {
-                    reject("Ensure Todoist API token is set.");
-                }
-                else if(error.response.status === 403) {
-                    reject("Incorrect Todoist API token. Update the token in the settings.")
-                }
-                else {
-                    reject("Unknown error. " + error.message);
-                }
-            });
-        });
-    }
-
-
-    // TODO : Remove
-    public getProjects(): Promise<project[]> {
-        const url = this.todoistAPIUrl;
-        const jwt = this.apiToken;
+    public async syncSections() {
         let state = this.state;
 
-        return new Promise(function (resolve, reject) {
-            axios.get(encodeURI(url + 'projects'), {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                }
-            }).then(response => {
-                if (response.status === 200) {
-                    let projects: project[] = [];
-                    response.data.forEach((element: any) => {
-                        projects.push(project.deserialize(element));
-                    });
-                    let data = settingsHelper.getTodoistData(state);
-                    data.projects = projects;
-                    settingsHelper.setTodoistData(state, data);
-                    resolve(projects);
-                }
-                else {
-                    reject(Error(response.statusText))
-                }
-            }).catch(error => {
-                reject(Error(error));
-            });
-        });
+        const api = new TodoistApi(this.apiToken);
+        const responseSections = await api.getSections().catch(() => [] as Section[]);
+
+        // Do not update if there are no sections (an error occurred)
+        if (responseSections.length === 0) {
+            return;
+        }
+
+        let data = SettingsHelper.getTodoistData(state);
+        data.sections = responseSections;
+
+        SettingsHelper.setTodoistData(state, data);
     }
 
-    public getActiveTasks(): Promise<task[]> {
-        const url = this.todoistAPIUrl;
-        const jwt = this.apiToken;
-        let state = this.state;
+    public async closeOpenTask(taskId: string) {
+        const api = new TodoistApi(this.apiToken);
 
-        return new Promise(function (resolve, reject) {
-            axios.get(encodeURI(url + 'tasks'), {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                }
-            }).then(response => {
-                if (response.status === 200) {
-                    let tasks: task[] = [];
-                    response.data.forEach((element: any) => {
-                        tasks.push(task.deserialize(element));
-                    });
-                    let data = settingsHelper.getTodoistData(state);
-                    data.tasks = tasks;
-                    settingsHelper.setTodoistData(state, data);
-                    resolve(tasks);
-                }
-                else {
-                    reject(Error(response.statusText))
-                }
-            }).catch(error => {
-                reject(Error(error));
-            });
+        try {
+            const response = await api.closeTask(taskId);
+            return response;
+        } catch {
+            throw new Error("Something went wrong when closing the task.");
+        }
+    }
+
+    public async createProject(projectName: string) {
+        const api = new TodoistApi(this.apiToken);
+
+        try {
+            const newProject = await api.addProject({ name: projectName });
+            return normalizeToProjectQuickPick(newProject);
+        } catch {
+            return "Something went wrong when creating the project.";
+        }
+    }
+
+    public async createTask(taskText: string, projectId?: string) {    
+        const api = new TodoistApi(this.apiToken);
+
+        try {
+            const newTask = await api.addTask({ content: taskText, projectId });
+            return newTask;
+        } catch {
+            throw new Error("Something went wrong when creating the task.");
+        }
+    }
+
+
+    public async getProjects() {
+        const state = this.state;
+
+        const api = new TodoistApi(this.apiToken);
+        const responseProjects = await api.getProjects().catch(() => [] as Project[]);
+
+        // Do not update if there are no projects (an error occurred)
+        if (responseProjects.length === 0) {
+            throw new Error("Something went wrong when getting the projects.");
+        }
+
+        let data = SettingsHelper.getTodoistData(state);
+        data.projects = [];
+
+        responseProjects.forEach((apiProject) => {
+            data.projects.push(normalizeToProjectQuickPick(apiProject));
         });
+
+        SettingsHelper.setTodoistData(state, data);
+
+        return data.projects;
+    }
+
+    public async getActiveTasks() {
+        const state = this.state;
+
+        const api = new TodoistApi(this.apiToken);
+        const activeTasks = await api.getTasks().catch(() => [] as Task[]);
+
+        let data = SettingsHelper.getTodoistData(state);
+        data.tasks = activeTasks;
+
+        SettingsHelper.setTodoistData(state, data);
+
+        return activeTasks;
     }
 }

@@ -1,15 +1,15 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import settingsHelper from './settingsHelper';
+import SettingsHelper from './settingsHelper';
 
-export default class fileSystemHelper {
+export default class FileSystemHelper {
 
     public static getWorkspaceFiles(): string[] {
         let workspace = vscode.workspace.rootPath!;
-        let ignoredFolders: string[] = [path.join(workspace, '.git')];
+        let ignoredFolders = [path.join(workspace, '.git')];
         let ignoredFiles: string[] = [];
-        if (settingsHelper.useGitIgnore()) {
+        if (SettingsHelper.useGitIgnore()) {
             const gitIgnorePath = path.join(workspace, ".gitignore");
             if (fs.existsSync(gitIgnorePath)) {
                 let fileContent = fs.readFileSync(gitIgnorePath, "utf-8");
@@ -23,10 +23,10 @@ export default class fileSystemHelper {
                 }
             }
         }
-        let folders: string[] = fileSystemHelper.getAllFolders(workspace, [], ignoredFolders);
+        let folders: string[] = FileSystemHelper.getAllFolders(workspace, [], ignoredFolders);
         let files: string[] = [];
         for (let folder of folders) {
-            let filesInFolder: string[] = fs.readdirSync(folder).filter(file => fs.statSync(path.join(folder, file)).isFile())
+            let filesInFolder: string[] = fs.readdirSync(folder).filter(file => fs.statSync(path.join(folder, file)).isFile());
             filesInFolder.forEach(file => {
                 files.push(path.join(folder, file));
             });
@@ -53,7 +53,7 @@ export default class fileSystemHelper {
         }
         folders.forEach(folder => {
             folderList.push(folder);
-            return fileSystemHelper.getAllFolders(folder, folderList, ignoredPaths);
+            return FileSystemHelper.getAllFolders(folder, folderList, ignoredPaths);
         });
         return folderList;
     }

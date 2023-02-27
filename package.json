@@ -251,24 +251,17 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"test": "node ./out/test/runTest.js"
+		"watch": "tsc -watch -p ./"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.2.0",
-		"@types/mocha": "^7.0.2",
-		"@types/node": "^13.13.52",
-		"@types/vscode": "^1.62.0",
-		"@typescript-eslint/eslint-plugin": "^2.34.0",
-		"@typescript-eslint/parser": "^2.34.0",
-		"eslint": "^6.8.0",
-		"glob": "^7.2.0",
-		"mocha": "^10.2.0",
-		"typescript": "^3.9.10",
-		"vscode-test": "^1.6.1"
+		"@types/node": "14.18.36",
+		"@types/vscode": "1.62.0",
+		"@typescript-eslint/eslint-plugin": "5.53.0",
+		"@typescript-eslint/parser": "5.53.0",
+		"eslint": "8.34.0",
+		"typescript": "4.9.5"
 	},
 	"dependencies": {
-		"axios": "0.21.2"
+		"@doist/todoist-api-typescript": "2.1.2"
 	}
 }

@@ -1,11 +1,10 @@
-import * as vscode from 'vscode';
-import project from './project';
-import task from './task';
-import section from './section';
+import type { Task, Section } from '@doist/todoist-api-typescript';
+import type { ProjectQuickPick } from '../types';
+import { TreeItem } from 'vscode';
 
-export class todoistTreeView extends vscode.TreeItem {
-    project!: project;
-    task!: task;
-    section!: section;
+export class TodoistTreeItem extends TreeItem {
+    project!: ProjectQuickPick;
+    task!: Task;
+    section!: Section;
 }
 
