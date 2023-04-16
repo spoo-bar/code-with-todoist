@@ -1,12 +1,8 @@
 import type { TodoistState } from '../types';
-import { workspace, Memento} from 'vscode';
+import { workspace, Memento } from 'vscode';
 import { TODOIST_INITIAL_STATE, SORT_BY, CONTEXT_KEYS } from '../constants';
 
 export default class SettingsHelper {
-    public static getTodoistAPIToken() {
-        return workspace.getConfiguration().get<string>("apiToken");
-    }
-
     public static getSyncInterval() {
         return workspace.getConfiguration().get<number>("syncInternval") ?? 600000;
     }
@@ -20,7 +16,7 @@ export default class SettingsHelper {
         return workspace.getConfiguration().get<boolean>("taskDisplay.showTaskNotifications");
     }
 
-    public static showTodaysTasks(){
+    public static showTodaysTasks() {
         return workspace.getConfiguration().get<boolean>("todayView.showTodaysTasks");
     }
 
@@ -45,7 +41,7 @@ export default class SettingsHelper {
     }
 
     public static getTodosRegEx() {
-        return workspace.getConfiguration().get<string>("identifyTodos.regex")?? "*";
+        return workspace.getConfiguration().get<string>("identifyTodos.regex") ?? "*";
     }
 
     public static getTodoistData(context: Memento) {
@@ -79,5 +75,5 @@ export default class SettingsHelper {
         let projectId = context.get<string>(workspaceName);
 
         return projectId;
-    } 
+    }
 }
