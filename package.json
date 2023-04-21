@@ -26,6 +26,14 @@
 	"contributes": {
 		"commands": [
 			{
+				"command": "todoist.setApiToken",
+				"title": "Todoist: Set API Token",
+				"icon": {
+					"light": "media/light_add.svg",
+					"dark": "media/dark_add.svg"
+				}
+			},
+			{
 				"command": "todoist.sync",
 				"title": "Todoist : Sync Todoist",
 				"icon": {
@@ -62,12 +70,6 @@
 			{
 				"title": "Code With Todoist",
 				"properties": {
-					"apiToken": {
-						"type": "string",
-						"markdownDescription": "Todoist Integrations API token. Available [here](https://todoist.com/prefs/integrations)",
-						"scope": "application",
-						"order": 0
-					},
 					"syncInternval": {
 						"type": "number",
 						"default": 600000,

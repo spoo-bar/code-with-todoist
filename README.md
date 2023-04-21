@@ -4,22 +4,29 @@ This extension allows you to track your [Todoist](https://todoist.com/) tasks fr
 
 ## Configuration
 
-Before you can use the extension, you have to set up the following configuration under 
+### Todoist API Token
+
+Before you can use the extension, you must set up your Todoist API token. To do this, you can follow the steps below.
+
+1. Get your API token [here](https://todoist.com/prefs/integrations).
+2. Run the `Todoist: Set API Token` command from the command palette.
+
+### Additional Settings
+
+There are a few settings that can be configured in the extension settings. You can access the extension settings by going to
 
 > File > Preferences > Settings > Code With Todoist
-
-`apiToken` - To access your Todoist tasks, you will need to add your Todoist API token. You can get your API token [here](https://todoist.com/prefs/integrations)
 
 `showTaskNotifications` - Enabling this shows notifications for tasks which have a due time.
 
 `showTodaysTasks` - Enabling this shows today's tasks at the top of the extension sidebar view.
 
 `sortBy` - Choose how the Todoist tasks should be sorted in the task views. The two options are to
-1. Retain Todoist task ordering 
+
+1. Retain Todoist task ordering
 2. Sort based on task priority
 
-`syncInternval` - Value in milliseconds at which interval Todoist data is synced. 
-
+`syncInternval` - Value in milliseconds at which interval Todoist data is synced.
 
 ## Features
 
@@ -34,7 +41,7 @@ Before you can use the extension, you have to set up the following configuration
 1. Tasks with Priority 1 have red circle before them.
 2. Tasks with Priority 2 have orange circle before them.
 3. Tasks with Priority 3 have blue circle before them.
-4. Tasks with Priority 4 (default) have grey circle before them. 
+4. Tasks with Priority 4 (default) have grey circle before them.
 
 ### View Task details and mark it as done
 

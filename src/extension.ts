@@ -8,6 +8,7 @@ import { TaskProvider } from './features/taskProvider';
 import { TodayTaskProvider } from './features/todayTaskProvider';
 import { WorkspaceProjectProvider } from './features/workspaceProjectProvider';
 import NotificationHelper from './helpers/notificationHelper';
+import SecretsHelper from './helpers/secretsHelper';
 
 
 let syncInterval!: NodeJS.Timeout;
@@ -15,17 +16,19 @@ let taskNotifications!: NodeJS.Timeout[];
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 
 	// On Extension Activation Validating Token -----------------------------------------
-	const apiToken = SettingsHelper.getTodoistAPIToken();
+	SecretsHelper.configureSecretsHelper(context.secrets);
+	const apiToken = await SecretsHelper.getSecret('apiToken');
+
 	const projectsTreeViewProvider = new ProjectsProvider(context.globalState);
 	const taskTreeViewProvider = new TaskProvider(context);
 	const todayTaskViewProvider = new TodayTaskProvider(context.globalState);
 	let workspaceProjectTreeViewProvider: WorkspaceProjectProvider;
 
 	if (!apiToken) {
-		vscode.window.showErrorMessage("Todoist API token not found. Set it under File > Preferences > Settings > Code With Todoist");
+		vscode.window.showErrorMessage("Todoist API token not found. Run command `Todoist: Set API Token` to set your API token.");
 	}
 	else {
 		syncInterval = setInterval(syncTodoist, SettingsHelper.getSyncInterval());
@@ -43,6 +46,15 @@ export function activate(context: vscode.ExtensionContext) {
 	// TODO - Add support for workspace todos
 
 	// Commands -------------------------------------------------------------------------
+
+	context.subscriptions.push(vscode.commands.registerCommand('todoist.setApiToken', () => {
+		SecretsHelper.requestSecretInputToUser({ prompt: "Enter your Todoist API token" }).then(apiToken => {
+			if (!apiToken) {
+				return;
+			}
+			SecretsHelper.setSecret('apiToken', apiToken);
+		});
+	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('todoist.openTask', (taskId) => {
 		SettingsHelper.setSelectedTask(context.workspaceState, taskId);
@@ -84,16 +96,16 @@ export function activate(context: vscode.ExtensionContext) {
 			attachworkspaceProject();
 			return;
 		}
-		
+
 		const ALERT_MESSAGE = "There is already a project attached to this workspace. Do you want to overwrite it?";
 		const OPTIONS = ['Yes', 'No'] as const;
 
 		const response = await vscode.window.showInformationMessage(ALERT_MESSAGE, { modal: false }, ...OPTIONS);
-		
+
 		if (response === OPTIONS[0]) {
 			attachworkspaceProject();
 		}
-		
+
 	}));
 
 	// context.subscriptions.push(vscode.commands.registerCommand('todoist.addProject', () => {
@@ -127,10 +139,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const taskName = await vscode.window.showInputBox({ prompt: "Creating task under project : " + projectName });
 
-		if(!taskName) {
+		if (!taskName) {
 			return;
 		}
-			
 
 		const progressOptions: vscode.ProgressOptions = {
 			location: vscode.ProgressLocation.Notification,
@@ -158,7 +169,6 @@ export function activate(context: vscode.ExtensionContext) {
 			});
 
 		});
-		
 	}));
 
 	// Event Handlers  -------------------------------------------------------------------
@@ -196,15 +206,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const OPTIONS = ['Yes', 'No'] as const;
 		const INFORMATION_MESSAGE = "Are you sure you want to mark the task as done?";
-	
+
 		const response = await vscode.window.showInformationMessage(INFORMATION_MESSAGE, { modal: false }, ...OPTIONS);
 
 		if (response === OPTIONS[1]) {
 			return;
 		}
-		
+
 		const apiHelper = new TodoistAPIHelper(context.globalState);
-	
+
 		const success = await apiHelper.closeOpenTask(taskId).catch(() => false);
 
 		if (success) {
@@ -217,7 +227,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	function initTreeView() {
 		SettingsHelper.setSelectedTask(context.workspaceState, undefined);
-	
+
 		let lastSyncTime = new Date(SettingsHelper.getTodoistData(context.globalState).lastSyncTime!).getTime();
 
 		if (isNaN(lastSyncTime)) {
@@ -307,7 +317,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		let projects = SettingsHelper.getTodoistData(context.globalState).projects;
-	
+
 		const selectedProject = await vscode.window.showQuickPick(projects, {
 			canPickMany: false,
 		});
