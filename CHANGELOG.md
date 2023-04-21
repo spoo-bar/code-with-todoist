@@ -4,6 +4,23 @@ All notable changes to the "code-with-todoist" extension will be documented in t
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.0.0] - 2023-04-21
+
+> **Note**
+>
+> This release is a breaking change. You will have to set your Todoist API token again using the `todoist.setApiToken` command. The prior value set in Extension settings is not used anymore
+
+Thanks to [dubisdev](https://github.com/dubisdev) for all contributions to this release 🚀
+
+### Changed
+* Replace Axios with with the official todoist client `@doist/todoist-api-typescript`
+
+### Security
+* Deprecated the `apiToken` setting in the Extension settings. The todoist api token is now configured via the `todoist.setApiToken` command which stores the api token in [SecretStorage](https://code.visualstudio.com/api/references/vscode-api#SecretStorage). 
+
+### Fixed
+* Memory leak in setting notifications for upcoming tasks 
+
 ## [1.1.1] - 2022-12-21 
 
 ### Fixed
